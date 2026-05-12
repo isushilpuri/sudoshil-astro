@@ -1,0 +1,23 @@
+---
+---
+
+<header id="home" class="header">
+  <div class="overlay"></div>
+  <div class="header-content container">
+    <h1 class="header-title">
+      <span class="up">HI!</span>
+      <span class="down">I am Sushil</span>
+    </h1>
+    <p class="header-subtitle">Contact Center Engineer</p>
+    <button class="btn btn-primary" id="vis-profile">Visit My Works</button>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('vis-profile');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      document.getElementById('service')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+</script>

@@ -1,0 +1,210 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Services from '../components/Services.astro';
+import Portfolio from '../components/Portfolio.astro';
+import BlogSection from '../components/BlogSection.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Navbar />
+  <Hero />
+  <About />
+  <Services />
+  <Portfolio />
+  <BlogSection />
+  <Contact />
+  <Footer />
+
+  <!-- Resume gate: SHA-256 password-protected modal -->
+  <script is:inline>
+    (function () {
+      var SALT        = 'a3f7c219e84b';
+      var STORED_HASH = '81be140a5f76da73cc57dbbfef1c651cf125d41948b61ba7eea76adb13b525c2';
+      var RESUME_URL  = '/SushilKumar_Resume.html';
+      var MAX_ATTEMPTS = 5;
+
+      function attempts() { return parseInt(sessionStorage.getItem('rg_attempts') || '0', 10); }
+      function bumpAttempts() { sessionStorage.setItem('rg_attempts', attempts() + 1); }
+      function isLocked() { return attempts() >= MAX_ATTEMPTS; }
+      function hasAccess() { return sessionStorage.getItem('rg_access') === '1'; }
+      function grantAccess() { sessionStorage.setItem('rg_access', '1'); }
+
+      function sha256hex(str) {
+        var buf = new TextEncoder().encode(str);
+        return crypto.subtle.digest('SHA-256', buf).then(function (hash) {
+          return Array.from(new Uint8Array(hash))
+            .map(function (b) { return b.toString(16).padStart(2, '0'); })
+            .join('');
+        });
+      }
+
+      function buildModal() {
+        var el = document.createElement('div');
+        el.id = 'rg-modal';
+        el.setAttribute('role', 'dialog');
+        el.setAttribute('aria-modal', 'true');
+        el.setAttribute('aria-labelledby', 'rg-title');
+        el.innerHTML = [
+          '<div class="rg-backdrop"></div>',
+          '<div class="rg-card">',
+          '  <button class="rg-close" aria-label="Close">&times;</button>',
+          '  <div class="rg-lock-icon">',
+          '    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">',
+          '      <path d="M18 8h-1V6A5 5 0 0 0 7 6v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0',
+          '            2-2V10a2 2 0 0 0-2-2zM9 6a3 3 0 0 1 6 0v2H9V6zm3 9a2 2 0 1 1 0-4 2 2 0 0 1',
+          '            0 4z"/>',
+          '    </svg>',
+          '  </div>',
+          '  <h2 id="rg-title" class="rg-title">Protected Content</h2>',
+          '  <p class="rg-desc">Enter the access password to view the resume.</p>',
+          '  <form id="rg-form" novalidate>',
+          '    <div class="rg-field">',
+          '      <input type="password" id="rg-pw" placeholder="Password" autocomplete="current-password" required>',
+          '      <button type="button" class="rg-toggle-pw" aria-label="Show password" tabindex="-1">',
+          '        <svg id="rg-eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">',
+          '          <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5',
+          '                12 4.5zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>',
+          '        </svg>',
+          '      </button>',
+          '    </div>',
+          '    <div id="rg-error" class="rg-error" role="alert" aria-live="polite"></div>',
+          '    <button type="submit" id="rg-submit" class="rg-btn">',
+          '      <span class="rg-btn-label">Unlock Resume</span>',
+          '      <span class="rg-spinner" aria-hidden="true"></span>',
+          '    </button>',
+          '  </form>',
+          '</div>'
+        ].join('');
+        document.body.appendChild(el);
+
+        el.querySelector('.rg-backdrop').addEventListener('click', hide);
+        el.querySelector('.rg-close').addEventListener('click', hide);
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+        document.getElementById('rg-form').addEventListener('submit', handleSubmit);
+        el.querySelector('.rg-toggle-pw').addEventListener('click', function () {
+          var input = document.getElementById('rg-pw');
+          var isText = input.type === 'text';
+          input.type = isText ? 'password' : 'text';
+          this.setAttribute('aria-label', isText ? 'Show password' : 'Hide password');
+        });
+      }
+
+      function show() {
+        document.getElementById('rg-modal').classList.add('rg-active');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('rg-pw').focus();
+      }
+
+      function hide() {
+        var modal = document.getElementById('rg-modal');
+        if (!modal) return;
+        modal.classList.remove('rg-active');
+        document.body.style.overflow = '';
+      }
+
+      function setLoading(on) {
+        var btn = document.getElementById('rg-submit');
+        btn.disabled = on;
+        btn.querySelector('.rg-btn-label').style.visibility = on ? 'hidden' : '';
+        btn.querySelector('.rg-spinner').style.display = on ? 'inline-block' : 'none';
+      }
+
+      function showError(msg) {
+        document.getElementById('rg-error').textContent = msg;
+        var field = document.getElementById('rg-pw').parentElement;
+        field.classList.add('rg-shake');
+        field.addEventListener('animationend', function () { field.classList.remove('rg-shake'); }, { once: true });
+      }
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        if (isLocked()) { showError('Too many incorrect attempts. Please try again later.'); return; }
+        var pw = document.getElementById('rg-pw').value;
+        if (!pw) { showError('Please enter the password.'); return; }
+        setLoading(true);
+        document.getElementById('rg-error').textContent = '';
+        sha256hex(SALT + pw).then(function (hash) {
+          setLoading(false);
+          if (hash === STORED_HASH) {
+            grantAccess();
+            hide();
+            window.open(RESUME_URL, '_blank');
+          } else {
+            bumpAttempts();
+            var left = MAX_ATTEMPTS - attempts();
+            if (left <= 0) {
+              showError('Too many incorrect attempts. Please try again later.');
+              document.getElementById('rg-submit').disabled = true;
+            } else {
+              showError('Incorrect password. ' + left + ' attempt' + (left === 1 ? '' : 's') + ' remaining.');
+            }
+            document.getElementById('rg-pw').value = '';
+            document.getElementById('rg-pw').focus();
+          }
+        }).catch(function () {
+          setLoading(false);
+          showError('Something went wrong. Please try again.');
+        });
+      }
+
+      function injectStyles() {
+        var css = [
+          '#rg-modal{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;}',
+          '#rg-modal.rg-active{display:flex;}',
+          '.rg-backdrop{position:absolute;inset:0;background:rgba(20,15,35,.7);backdrop-filter:blur(5px);}',
+          '.rg-card{position:relative;z-index:1;background:#fff;border-radius:18px;padding:44px 40px 36px;width:100%;max-width:380px;margin:16px;box-shadow:0 24px 64px rgba(0,0,0,.28);text-align:center;}',
+          '.rg-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.5rem;color:#bbb;cursor:pointer;padding:4px 8px;border-radius:6px;transition:color .2s;line-height:1;}',
+          '.rg-close:hover{color:#695aa6;}',
+          '.rg-lock-icon{width:52px;height:52px;background:#f3f0ff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:#695aa6;}',
+          '.rg-lock-icon svg{width:26px;height:26px;}',
+          '.rg-title{font-size:1.2rem;font-weight:700;color:#1a1a2e;margin-bottom:8px;}',
+          '.rg-desc{color:#777;font-size:.88rem;margin-bottom:22px;line-height:1.5;}',
+          '.rg-field{position:relative;margin-bottom:14px;text-align:left;}',
+          '.rg-field input{width:100%;padding:10px 44px 10px 14px;border:1.5px solid #ddd;border-radius:9px;font-size:.95rem;color:#212529;outline:none;transition:border-color .2s,box-shadow .2s;background:#fafafa;font-family:inherit;letter-spacing:.05em;}',
+          '.rg-field input:focus{border-color:#695aa6;box-shadow:0 0 0 3px rgba(105,90,166,.12);background:#fff;}',
+          '.rg-field.rg-shake input{animation:rg-shake .35s ease;}',
+          '.rg-toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;padding:0;display:flex;align-items:center;transition:color .2s;}',
+          '.rg-toggle-pw:hover{color:#695aa6;}',
+          '.rg-toggle-pw svg{width:18px;height:18px;}',
+          '.rg-error{color:#ec185d;font-size:.82rem;min-height:18px;margin-bottom:12px;text-align:left;}',
+          '.rg-btn{width:100%;padding:11px;background:#695aa6;color:#fff;border:none;border-radius:9px;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .2s,transform .1s;font-family:inherit;position:relative;display:flex;align-items:center;justify-content:center;}',
+          '.rg-btn:hover:not(:disabled){background:#5a4d8f;}',
+          '.rg-btn:active:not(:disabled){transform:scale(.98);}',
+          '.rg-btn:disabled{opacity:.65;cursor:not-allowed;}',
+          '.rg-spinner{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;position:absolute;animation:rg-spin .7s linear infinite;}',
+          '@keyframes rg-spin{to{transform:rotate(360deg);}}',
+          '@keyframes rg-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}'
+        ].join('');
+        var s = document.createElement('style');
+        s.textContent = css;
+        document.head.appendChild(s);
+      }
+
+      function init() {
+        injectStyles();
+        buildModal();
+        var btn = document.getElementById('view-resume-btn');
+        if (!btn) return;
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (hasAccess()) {
+            window.open(RESUME_URL, '_blank');
+          } else {
+            show();
+          }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</Layout>

@@ -1,0 +1,97 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Sushil Kumar | Contact Center Engineer',
+  description = 'Contact Center Engineer specialising in Amazon Connect, Lex V2, and AWS Lambda.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content={description} />
+    <meta name="author" content="Sushil Kumar" />
+    <title>{title}</title>
+    <link rel="stylesheet" href="/assets/vendors/themify-icons/css/themify-icons.css" />
+    <link rel="stylesheet" href="/assets/css/meyawo.css" />
+    <style is:global>
+      .blog-tag {
+        display: inline-block;
+        background: #f3f0ff;
+        color: #695aa6;
+        border-radius: 999px;
+        padding: 2px 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 4px;
+      }
+
+      .service-card .body .title {
+        transition: opacity 0.25s, visibility 0.25s;
+      }
+      .service-card:hover .body img.icon {
+        opacity: 0;
+        visibility: hidden;
+        margin-top: 0;
+        margin-bottom: 0;
+        width: 0;
+      }
+      .service-card:hover .body .title {
+        opacity: 0;
+        visibility: hidden;
+      }
+      .service-card:hover .body .subtitle {
+        top: 50%;
+        left: 0;
+        right: 0;
+        bottom: auto;
+        transform: translateY(-50%);
+        padding: 0 20px;
+        font-size: 0.88rem;
+        line-height: 1.65;
+        color: #393e46;
+      }
+
+      .folio-tag {
+        display: inline-block;
+        background: #fff;
+        color: #695aa6;
+        border: 1px solid #695aa6;
+        border-radius: 999px;
+        padding: 2px 10px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        margin: 3px 3px 0 0;
+        letter-spacing: 0.02em;
+      }
+
+      .portfolio-card-overlay .portfolio-card-caption h4 {
+        color: #1a1a2e;
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+      }
+      .portfolio-card-overlay .portfolio-card-caption p {
+        color: #393e46;
+        font-size: 0.83rem;
+        line-height: 1.5;
+        margin-bottom: 4px;
+      }
+
+      .about-caption p {
+        margin-bottom: 0.6rem;
+      }
+      .about-caption strong {
+        color: #695aa6;
+      }
+    </style>
+  </head>
+  <body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
+    <slot />
+  </body>
+</html>
