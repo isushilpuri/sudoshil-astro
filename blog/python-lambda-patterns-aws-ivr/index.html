@@ -1,0 +1,235 @@
+<!DOCTYPE html><html lang="en" style="--accent-color: #ec185d; --callout-bg: #fff0f3;"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="description" content="Reusable Python patterns for writing clean, testable Lambda functions behind Connect and Lex."><title>Python Lambda Patterns for AWS IVR | Sudoshil</title><link rel="stylesheet" href="/assets/vendors/themify-icons/css/themify-icons.css"><link rel="stylesheet" href="/assets/css/meyawo.css"><style>body{background:#f8f9fa}.blog-post-header{color:#fff;padding:80px 0 50px;margin-bottom:0}.blog-post-header .back-link{color:#fffc;text-decoration:none;font-size:.9rem;display:inline-flex;align-items:center;gap:6px;margin-bottom:24px;transition:color .2s}.blog-post-header .back-link:hover{color:#fff}.blog-post-header h1{font-size:2.2rem;font-weight:700;line-height:1.3;margin-bottom:16px}.blog-meta{font-size:.88rem;color:#ffffffbf}.blog-meta span{margin-right:20px}.tag-badge{display:inline-block;background:#fff3;color:#fff;border-radius:999px;padding:4px 14px;font-size:.8rem;font-weight:600;margin-right:6px}.blog-body{background:#fff;border-radius:10px;box-shadow:0 2px 20px #00000012;padding:48px 56px;margin-top:-30px;margin-bottom:60px;max-width:820px}.blog-body h2{font-size:1.4rem;font-weight:700;color:var(--accent-color, #695aa6);margin:36px 0 12px}.blog-body h3{font-size:1.1rem;font-weight:700;color:#393e46;margin:28px 0 10px}.blog-body p{color:#444;line-height:1.85;margin-bottom:16px}.blog-body ul,.blog-body ol{color:#444;line-height:1.85;padding-left:24px;margin-bottom:16px}.blog-body li{margin-bottom:6px}.blog-body code:not(pre code){background:var(--callout-bg, #f3f0ff);color:var(--accent-color, #695aa6);padding:2px 7px;border-radius:4px;font-size:.9em}.blog-body pre{background:#1e1e2e;color:#cdd6f4;border-radius:8px;padding:20px 24px;overflow-x:auto;margin:20px 0;font-size:.88rem;line-height:1.7}.blog-body pre code{background:none!important;color:inherit!important;padding:0!important}.blog-body table{width:100%;border-collapse:collapse;margin:20px 0;font-size:.9rem}.blog-body th{background:var(--callout-bg, #f3f0ff);color:var(--accent-color, #695aa6);padding:10px 14px;text-align:left}.blog-body td{padding:10px 14px;border-bottom:1px solid #eee;color:#444}.callout{border-left:4px solid var(--accent-color, #695aa6);background:var(--callout-bg, #f3f0ff);border-radius:0 8px 8px 0;padding:14px 20px;margin:20px 0;color:#444}.callout.tip{border-left-color:#ff6d02;background:#fff5ec}.custom-navbar{position:relative!important}.custom-navbar .logo{color:#695aa6}#blog-post-nav{margin-bottom:48px;max-width:820px}.blog-post-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #eee;padding-top:28px}.blog-nav-btn{display:flex;align-items:center;gap:12px;text-decoration:none;color:#393e46;padding:12px 16px;border-radius:8px;border:1px solid #eee;background:#fff;transition:border-color .2s,box-shadow .2s;min-width:0;max-width:42%}.blog-nav-btn:hover{border-color:#695aa6;box-shadow:0 2px 10px #695aa61f;color:#695aa6;text-decoration:none}.blog-nav-disabled{visibility:hidden}.blog-nav-arrow{font-size:1.3rem;color:#695aa6;flex-shrink:0}.blog-nav-label{display:flex;flex-direction:column;min-width:0}.blog-nav-hint{font-size:.75rem;color:#999;text-transform:uppercase;letter-spacing:.05em}.blog-nav-title{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.blog-nav-next .blog-nav-label{text-align:right}.blog-nav-all{font-size:.85rem;color:#695aa6;text-decoration:none;padding:8px 16px;border-radius:999px;border:1px solid #695aa6;white-space:nowrap;flex-shrink:0;transition:background .2s,color .2s}.blog-nav-all:hover{background:#695aa6;color:#fff;text-decoration:none}@media (max-width: 768px){.blog-body{padding:28px 20px}.blog-post-header h1{font-size:1.6rem}}
+</style></head> <body> <nav class="custom-navbar"> <div class="container"> <a class="logo" href="/">Sudoshil</a> <ul class="nav"> <li class="item"><a class="link" href="/#home">Home</a></li> <li class="item"><a class="link" href="/#about">About</a></li> <li class="item"><a class="link" href="/#portfolio">Projects</a></li> <li class="item"><a class="link active" href="/#blog">Blog</a></li> <li class="item"><a class="link" href="/#contact">Contact</a></li> </ul> <a href="javascript:void(0)" id="nav-toggle" class="hamburger hamburger--elastic"> <div class="hamburger-box"><div class="hamburger-inner"></div></div> </a> </div> </nav> <div class="blog-post-header" style="background: linear-gradient(135deg, #ff6d02 0%, #ec185d 100%);"> <div class="container"> <a class="back-link" href="/#blog"><i class="ti-arrow-left"></i> Back to Blog</a> <div class="mb-2"> <span class="tag-badge">Python</span><span class="tag-badge">AWS Lambda</span><span class="tag-badge">IVR</span> </div> <h1>Python Lambda Patterns for AWS IVR</h1> <div class="blog-meta"> <span><i class="ti-calendar"></i>&nbsp; March 2025</span> <span><i class="ti-time"></i>&nbsp; 11 min read</span> <span><i class="ti-user"></i>&nbsp; Sushil Kumar</span> </div> </div> </div> <div class="container"> <div class="blog-body">  <p>After three years of writing AWS Lambda functions that sit behind Amazon Connect and Amazon Lex, I’ve settled on a set of patterns that keep the code clean, the tests fast, and production incidents rare. This post distills those patterns into something you can use immediately.</p>
+<p>The examples are Python, but the thinking applies regardless of runtime.</p>
+<h2 id="pattern-1-separate-the-handler-from-the-logic">Pattern 1: Separate the Handler from the Logic</h2>
+<p>The most common mistake I see is cramming all business logic into <code>lambda_handler</code>. The handler has one job — unpack the event, call your logic, and pack the response. Everything else belongs in separate functions.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># Bad — untestable monolith</span></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> lambda_handler</span><span style="color:#E1E4E8">(event, context):</span></span>
+<span class="line"><span style="color:#E1E4E8">    intent </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> event[</span><span style="color:#9ECBFF">'sessionState'</span><span style="color:#E1E4E8">][</span><span style="color:#9ECBFF">'intent'</span><span style="color:#E1E4E8">][</span><span style="color:#9ECBFF">'name'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    account_type </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> event[</span><span style="color:#9ECBFF">'sessionState'</span><span style="color:#E1E4E8">][</span><span style="color:#9ECBFF">'intent'</span><span style="color:#E1E4E8">][</span><span style="color:#9ECBFF">'slots'</span><span style="color:#E1E4E8">][</span><span style="color:#9ECBFF">'AccountType'</span><span style="color:#E1E4E8">][</span><span style="color:#9ECBFF">'value'</span><span style="color:#E1E4E8">][</span><span style="color:#9ECBFF">'interpretedValue'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#6A737D">    # ... 80 more lines of logic ...</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">...</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Good — thin handler</span></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> lambda_handler</span><span style="color:#E1E4E8">(event, context):</span></span>
+<span class="line"><span style="color:#E1E4E8">    source   </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> event[</span><span style="color:#9ECBFF">'invocationSource'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    intent   </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> event[</span><span style="color:#9ECBFF">'sessionState'</span><span style="color:#E1E4E8">][</span><span style="color:#9ECBFF">'intent'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    slots    </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> intent.get(</span><span style="color:#9ECBFF">'slots'</span><span style="color:#E1E4E8">, {})</span></span>
+<span class="line"><span style="color:#E1E4E8">    session  </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> event[</span><span style="color:#9ECBFF">'sessionState'</span><span style="color:#E1E4E8">].get(</span><span style="color:#9ECBFF">'sessionAttributes'</span><span style="color:#E1E4E8">, {})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> source </span><span style="color:#F97583">==</span><span style="color:#9ECBFF"> 'DialogCodeHook'</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> handle_dialog(intent, slots, session)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> handle_fulfillment(intent, slots, session)</span></span>
+<span class="line"></span></code></pre>
+<p>Now <code>handle_dialog</code> and <code>handle_fulfillment</code> are plain functions you can unit-test without any Lambda infrastructure.</p>
+<h2 id="pattern-2-a-response-builder-module">Pattern 2: A Response Builder Module</h2>
+<p>Building Lex V2 response dicts by hand in every function leads to typos and forgotten fields. Centralise it:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># lex_response.py</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> delegate</span><span style="color:#E1E4E8">(intent_name, slots, session_attrs):</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#9ECBFF">        "sessionState"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#9ECBFF">            "sessionAttributes"</span><span style="color:#E1E4E8">: session_attrs,</span></span>
+<span class="line"><span style="color:#9ECBFF">            "dialogAction"</span><span style="color:#E1E4E8">: {</span><span style="color:#9ECBFF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Delegate"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#9ECBFF">            "intent"</span><span style="color:#E1E4E8">: {</span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: intent_name, </span><span style="color:#9ECBFF">"slots"</span><span style="color:#E1E4E8">: slots, </span><span style="color:#9ECBFF">"state"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"InProgress"</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> elicit_slot</span><span style="color:#E1E4E8">(intent_name, slots, session_attrs, slot_to_elicit, message):</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#9ECBFF">        "sessionState"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#9ECBFF">            "sessionAttributes"</span><span style="color:#E1E4E8">: session_attrs,</span></span>
+<span class="line"><span style="color:#9ECBFF">            "dialogAction"</span><span style="color:#E1E4E8">: {</span><span style="color:#9ECBFF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"ElicitSlot"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"slotToElicit"</span><span style="color:#E1E4E8">: slot_to_elicit},</span></span>
+<span class="line"><span style="color:#9ECBFF">            "intent"</span><span style="color:#E1E4E8">: {</span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: intent_name, </span><span style="color:#9ECBFF">"slots"</span><span style="color:#E1E4E8">: slots, </span><span style="color:#9ECBFF">"state"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"InProgress"</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">        },</span></span>
+<span class="line"><span style="color:#9ECBFF">        "messages"</span><span style="color:#E1E4E8">: [{</span><span style="color:#9ECBFF">"contentType"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"PlainText"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"content"</span><span style="color:#E1E4E8">: message}]</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> close</span><span style="color:#E1E4E8">(intent_name, slots, session_attrs, message, state</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"Fulfilled"</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#9ECBFF">        "sessionState"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#9ECBFF">            "sessionAttributes"</span><span style="color:#E1E4E8">: session_attrs,</span></span>
+<span class="line"><span style="color:#9ECBFF">            "dialogAction"</span><span style="color:#E1E4E8">: {</span><span style="color:#9ECBFF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Close"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#9ECBFF">            "intent"</span><span style="color:#E1E4E8">: {</span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: intent_name, </span><span style="color:#9ECBFF">"slots"</span><span style="color:#E1E4E8">: slots, </span><span style="color:#9ECBFF">"state"</span><span style="color:#E1E4E8">: state}</span></span>
+<span class="line"><span style="color:#E1E4E8">        },</span></span>
+<span class="line"><span style="color:#9ECBFF">        "messages"</span><span style="color:#E1E4E8">: [{</span><span style="color:#9ECBFF">"contentType"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"PlainText"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"content"</span><span style="color:#E1E4E8">: message}]</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> confirm_intent</span><span style="color:#E1E4E8">(intent_name, slots, session_attrs, message):</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#9ECBFF">        "sessionState"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#9ECBFF">            "sessionAttributes"</span><span style="color:#E1E4E8">: session_attrs,</span></span>
+<span class="line"><span style="color:#9ECBFF">            "dialogAction"</span><span style="color:#E1E4E8">: {</span><span style="color:#9ECBFF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"ConfirmIntent"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#9ECBFF">            "intent"</span><span style="color:#E1E4E8">: {</span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: intent_name, </span><span style="color:#9ECBFF">"slots"</span><span style="color:#E1E4E8">: slots, </span><span style="color:#9ECBFF">"state"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"InProgress"</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">        },</span></span>
+<span class="line"><span style="color:#9ECBFF">        "messages"</span><span style="color:#E1E4E8">: [{</span><span style="color:#9ECBFF">"contentType"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"PlainText"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"content"</span><span style="color:#E1E4E8">: message}]</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span></code></pre>
+<p>Your intent handlers become much more readable:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> lex_response </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> elicit_slot, delegate, close</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> validate_transfer</span><span style="color:#E1E4E8">(intent, slots, session):</span></span>
+<span class="line"><span style="color:#E1E4E8">    amount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> get_slot_value(slots, </span><span style="color:#9ECBFF">'TransferAmount'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> amount </span><span style="color:#F97583">and</span><span style="color:#79B8FF"> float</span><span style="color:#E1E4E8">(amount) </span><span style="color:#F97583">></span><span style="color:#79B8FF"> 10_000</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> elicit_slot(</span></span>
+<span class="line"><span style="color:#E1E4E8">            intent[</span><span style="color:#9ECBFF">'name'</span><span style="color:#E1E4E8">], slots, session,</span></span>
+<span class="line"><span style="color:#FFAB70">            slot_to_elicit</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">'TransferAmount'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">            message</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"Transfers are limited to $10,000. Please enter a lower amount."</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> delegate(intent[</span><span style="color:#9ECBFF">'name'</span><span style="color:#E1E4E8">], slots, session)</span></span>
+<span class="line"></span></code></pre>
+<h2 id="pattern-3-a-slot-accessor-helper">Pattern 3: A Slot Accessor Helper</h2>
+<p>Lex V2 slot values are buried several levels deep and can be <code>None</code> at multiple levels. Accessing them safely without a helper produces deeply nested conditionals:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> get_slot_value</span><span style="color:#E1E4E8">(slots, slot_name):</span></span>
+<span class="line"><span style="color:#9ECBFF">    """Return the interpretedValue for a slot, or None if absent."""</span></span>
+<span class="line"><span style="color:#E1E4E8">    slot </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> slots.get(slot_name)</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#F97583"> not</span><span style="color:#E1E4E8"> slot:</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> None</span></span>
+<span class="line"><span style="color:#E1E4E8">    value </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> slot.get(</span><span style="color:#9ECBFF">'value'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#F97583"> not</span><span style="color:#E1E4E8"> value:</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> None</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> value.get(</span><span style="color:#9ECBFF">'interpretedValue'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> get_slot_values</span><span style="color:#E1E4E8">(slots, </span><span style="color:#F97583">*</span><span style="color:#E1E4E8">names):</span></span>
+<span class="line"><span style="color:#9ECBFF">    """Return a dict of {name: interpretedValue} for multiple slots at once."""</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> {name: get_slot_value(slots, name) </span><span style="color:#F97583">for</span><span style="color:#E1E4E8"> name </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> names}</span></span>
+<span class="line"></span></code></pre>
+<p>Usage:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#E1E4E8">account_type, amount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">    get_slot_value(slots, </span><span style="color:#9ECBFF">'AccountType'</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    get_slot_value(slots, </span><span style="color:#9ECBFF">'TransferAmount'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span></code></pre>
+<h2 id="pattern-4-safe-external-api-calls-with-timeouts-and-retries">Pattern 4: Safe External API Calls with Timeouts and Retries</h2>
+<p>Connect’s hard limit for a Lambda invocation is <strong>8 seconds</strong>. If your Lambda calls a downstream API, you must enforce a timeout shorter than that or a slow API will cause Connect to return an error branch.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> requests</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> botocore.exceptions </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> ClientError</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">DOWNSTREAM_TIMEOUT</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 5</span><span style="color:#6A737D">  # seconds — leave headroom for Lambda cold start + Lex overhead</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> fetch_account_balance</span><span style="color:#E1E4E8">(account_id: </span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">) -> </span><span style="color:#79B8FF">dict</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">    try</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">        resp </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> requests.get(</span></span>
+<span class="line"><span style="color:#F97583">            f</span><span style="color:#9ECBFF">"https://internal-api.example.com/accounts/</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">account_id</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">/balance"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">            timeout</span><span style="color:#F97583">=</span><span style="color:#79B8FF">DOWNSTREAM_TIMEOUT</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">            headers</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">"x-api-key"</span><span style="color:#E1E4E8">: get_secret(</span><span style="color:#9ECBFF">"BALANCE_API_KEY"</span><span style="color:#E1E4E8">)}</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"><span style="color:#E1E4E8">        resp.raise_for_status()</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> resp.json()</span></span>
+<span class="line"><span style="color:#F97583">    except</span><span style="color:#E1E4E8"> requests.Timeout:</span></span>
+<span class="line"><span style="color:#F97583">        raise</span><span style="color:#79B8FF"> RuntimeError</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"Balance API timed out after </span><span style="color:#79B8FF">{DOWNSTREAM_TIMEOUT}</span><span style="color:#9ECBFF">s"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    except</span><span style="color:#E1E4E8"> requests.HTTPError </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> e:</span></span>
+<span class="line"><span style="color:#F97583">        raise</span><span style="color:#79B8FF"> RuntimeError</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"Balance API returned </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">e.response.status_code</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip">
+<strong>Tip:</strong> Initialise the <code>requests.Session</code> and AWS SDK clients <em>outside</em> the handler at module level. Lambda reuses the execution environment between warm invocations, so connection pools are reused and you avoid per-invocation connection overhead.
+</div>
+<h2 id="pattern-5-structured-logging">Pattern 5: Structured Logging</h2>
+<p>CloudWatch Logs Insights is your debugger in production. JSON logs let you query them like a database.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> json, logging, os</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">logger </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> logging.getLogger()</span></span>
+<span class="line"><span style="color:#E1E4E8">logger.setLevel(os.environ.get(</span><span style="color:#9ECBFF">'LOG_LEVEL'</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">'INFO'</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> log</span><span style="color:#E1E4E8">(level: </span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">, message: </span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">**</span><span style="color:#E1E4E8">kwargs):</span></span>
+<span class="line"><span style="color:#E1E4E8">    entry </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> {</span><span style="color:#9ECBFF">"level"</span><span style="color:#E1E4E8">: level, </span><span style="color:#9ECBFF">"message"</span><span style="color:#E1E4E8">: message, </span><span style="color:#F97583">**</span><span style="color:#E1E4E8">kwargs}</span></span>
+<span class="line"><span style="color:#79B8FF">    getattr</span><span style="color:#E1E4E8">(logger, level.lower())(json.dumps(entry))</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Usage in your handler</span></span>
+<span class="line"><span style="color:#E1E4E8">log(</span><span style="color:#9ECBFF">"info"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"Dialog codehook invoked"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">    intent</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">intent[</span><span style="color:#9ECBFF">'name'</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#FFAB70">    session_id</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">event.get(</span><span style="color:#9ECBFF">'sessionId'</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#FFAB70">    slots</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{k: get_slot_value(slots, k) </span><span style="color:#F97583">for</span><span style="color:#E1E4E8"> k </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> slots})</span></span>
+<span class="line"></span></code></pre>
+<p>In CloudWatch Logs Insights you can now filter by intent, session ID, or any field:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#E1E4E8">fields @timestamp, </span><span style="color:#F97583">message</span><span style="color:#E1E4E8">, intent, session_id</span></span>
+<span class="line"><span style="color:#E1E4E8">| </span><span style="color:#F97583">filter</span><span style="color:#F97583"> level</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> "error"</span></span>
+<span class="line"><span style="color:#E1E4E8">| sort @timestamp </span><span style="color:#F97583">desc</span></span>
+<span class="line"><span style="color:#E1E4E8">| </span><span style="color:#F97583">limit</span><span style="color:#79B8FF"> 50</span></span>
+<span class="line"></span></code></pre>
+<h2 id="pattern-6-secrets-from-parameter-store-not-environment-variables">Pattern 6: Secrets from Parameter Store, Not Environment Variables</h2>
+<p>Hardcoding secrets in env vars means they’re visible in the Lambda console and in CloudTrail. Use SSM Parameter Store or Secrets Manager instead, and cache the value in the module scope so you only pay the SSM API call on cold start:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> boto3, functools</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">ssm </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> boto3.client(</span><span style="color:#9ECBFF">'ssm'</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">region_name</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">'us-east-1'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">@functools.lru_cache</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">maxsize</span><span style="color:#F97583">=</span><span style="color:#79B8FF">None</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> get_secret</span><span style="color:#E1E4E8">(param_name: </span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">) -> </span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    response </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> ssm.get_parameter(</span><span style="color:#FFAB70">Name</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">param_name, </span><span style="color:#FFAB70">WithDecryption</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> response[</span><span style="color:#9ECBFF">'Parameter'</span><span style="color:#E1E4E8">][</span><span style="color:#9ECBFF">'Value'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span></code></pre>
+<div class="callout">
+<strong>IAM note:</strong> Grant your Lambda's execution role <code>ssm:GetParameter</code> on the specific parameter ARN — not <code>ssm:*</code> on <code>*</code>.
+</div>
+<h2 id="pattern-7-intent-router">Pattern 7: Intent Router</h2>
+<p>As the number of intents grows, a chain of <code>if/elif</code> blocks in the handler becomes unmanageable. A router pattern scales cleanly:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> intents </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> check_balance, transfer_funds, report_lost_card</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">DIALOG_HANDLERS</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#9ECBFF">    "CheckBalance"</span><span style="color:#E1E4E8">:    check_balance.handle_dialog,</span></span>
+<span class="line"><span style="color:#9ECBFF">    "TransferFunds"</span><span style="color:#E1E4E8">:   transfer_funds.handle_dialog,</span></span>
+<span class="line"><span style="color:#9ECBFF">    "ReportLostCard"</span><span style="color:#E1E4E8">:  report_lost_card.handle_dialog,</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">FULFILL_HANDLERS</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#9ECBFF">    "CheckBalance"</span><span style="color:#E1E4E8">:    check_balance.fulfill,</span></span>
+<span class="line"><span style="color:#9ECBFF">    "TransferFunds"</span><span style="color:#E1E4E8">:   transfer_funds.fulfill,</span></span>
+<span class="line"><span style="color:#9ECBFF">    "ReportLostCard"</span><span style="color:#E1E4E8">:  report_lost_card.fulfill,</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> lambda_handler</span><span style="color:#E1E4E8">(event, context):</span></span>
+<span class="line"><span style="color:#E1E4E8">    source  </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> event[</span><span style="color:#9ECBFF">'invocationSource'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    intent  </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> event[</span><span style="color:#9ECBFF">'sessionState'</span><span style="color:#E1E4E8">][</span><span style="color:#9ECBFF">'intent'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    name    </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> intent[</span><span style="color:#9ECBFF">'name'</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    slots   </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> intent.get(</span><span style="color:#9ECBFF">'slots'</span><span style="color:#E1E4E8">, {})</span></span>
+<span class="line"><span style="color:#E1E4E8">    session </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> event[</span><span style="color:#9ECBFF">'sessionState'</span><span style="color:#E1E4E8">].get(</span><span style="color:#9ECBFF">'sessionAttributes'</span><span style="color:#E1E4E8">, {})</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    registry </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> DIALOG_HANDLERS</span><span style="color:#F97583"> if</span><span style="color:#E1E4E8"> source </span><span style="color:#F97583">==</span><span style="color:#9ECBFF"> 'DialogCodeHook'</span><span style="color:#F97583"> else</span><span style="color:#79B8FF"> FULFILL_HANDLERS</span></span>
+<span class="line"><span style="color:#E1E4E8">    handler  </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> registry.get(name)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#F97583"> not</span><span style="color:#E1E4E8"> handler:</span></span>
+<span class="line"><span style="color:#E1E4E8">        log(</span><span style="color:#9ECBFF">"error"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"Unknown intent"</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">intent</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">name)</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> close(name, slots, session, </span><span style="color:#9ECBFF">"I'm not sure how to help with that. Transferring you now."</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> handler(intent, slots, session)</span></span>
+<span class="line"></span></code></pre>
+<p>Each intent lives in its own module (<code>intents/check_balance.py</code>, etc.) with <code>handle_dialog</code> and <code>fulfill</code> functions — easy to find, easy to test in isolation.</p>
+<h2 id="putting-it-all-together-project-structure">Putting It All Together: Project Structure</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>lambda/</span></span>
+<span class="line"><span>├── handler.py          # lambda_handler + router</span></span>
+<span class="line"><span>├── lex_response.py     # response builders</span></span>
+<span class="line"><span>├── slot_utils.py       # get_slot_value, get_slot_values</span></span>
+<span class="line"><span>├── secrets.py          # get_secret with lru_cache</span></span>
+<span class="line"><span>├── logger.py           # structured JSON logger</span></span>
+<span class="line"><span>└── intents/</span></span>
+<span class="line"><span>    ├── __init__.py</span></span>
+<span class="line"><span>    ├── check_balance.py</span></span>
+<span class="line"><span>    ├── transfer_funds.py</span></span>
+<span class="line"><span>    └── report_lost_card.py</span></span>
+<span class="line"><span>tests/</span></span>
+<span class="line"><span>├── test_check_balance.py</span></span>
+<span class="line"><span>├── test_transfer_funds.py</span></span>
+<span class="line"><span>└── fixtures/</span></span>
+<span class="line"><span>    └── lex_events.json   # sample Lex V2 event payloads for unit tests</span></span>
+<span class="line"><span></span></span></code></pre>
+<div class="callout tip">
+<strong>Testing tip:</strong> Store a copy of a real Lex V2 event from CloudWatch Logs in <code>tests/fixtures/lex_events.json</code>. Your unit tests load it and manipulate specific fields — no mocking of AWS services required, no internet connection needed, test suite runs in milliseconds.
+</div>
+<h2 id="summary">Summary</h2>
+<ul>
+<li>Keep <code>lambda_handler</code> thin — route to focused functions.</li>
+<li>Centralise response construction in <code>lex_response.py</code>.</li>
+<li>Use a slot accessor helper to handle nullable Lex V2 slot shapes.</li>
+<li>Enforce downstream API timeouts well under 8 seconds.</li>
+<li>Log JSON so you can query CloudWatch Logs Insights.</li>
+<li>Cache secrets at module scope; fetch from SSM not env vars.</li>
+<li>Use an intent router as the bot grows beyond 3–4 intents.</li>
+</ul>  </div> </div> <div class="container"> <div id="blog-post-nav"> <div class="blog-post-nav-inner"> <a href="/blog/amazon-lex-v2-speech-intent-handling" class="blog-nav-btn blog-nav-prev"> <span class="blog-nav-arrow">&#8592;</span> <span class="blog-nav-label"> <span class="blog-nav-hint">Previous</span> <span class="blog-nav-title">Amazon Lex V2: Speech &amp; Intent Handling</span> </span> </a> <a href="/#blog" class="blog-nav-all">All Posts</a> <span class="blog-nav-btn blog-nav-next blog-nav-disabled"></span> </div> </div> </div> <div class="container"> <footer class="footer"> <p class="mb-0">Copyright 2026 &copy; Sudoshil</p> <div class="social-links text-right m-auto ml-sm-auto"> <a href="https://github.com/isushilpuri" class="link" rel="noreferrer" target="_blank"> <i class="ti-github"></i> </a> <a href="https://www.linkedin.com/in/sushil-kumar-4347b4173" class="link" rel="noreferrer" target="_blank"> <i class="ti-linkedin"></i> </a> <a href="https://x.com/sudoshil" class="link" rel="noreferrer" target="_blank"> <i class="ti-twitter-alt"></i> </a> </div> </footer> </div> <script>
+      document.getElementById('nav-toggle').addEventListener('click', function() {
+        this.classList.toggle('is-active');
+        document.querySelector('ul.nav').classList.toggle('show');
+      });
+    </script> </body> </html>
