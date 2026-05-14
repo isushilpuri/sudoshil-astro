@@ -1,0 +1,379 @@
+<!DOCTYPE html><html lang="en" style="--accent-color: #3776ab; --callout-bg: #e8f4fd;"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="description" content="A clear, analogy-driven guide to Python concurrency — threads, processes, asyncio, event loops, and coroutines explained from first principles."><title>Python Asyncio: The Zen of Not Waiting | Sudoshil</title><link rel="stylesheet" href="/assets/vendors/themify-icons/css/themify-icons.css"><link rel="stylesheet" href="/assets/css/meyawo.css"><style>body{background:#f8f9fa}.blog-post-header{color:#fff;padding:80px 0 50px;margin-bottom:0}.blog-post-header .back-link{color:#fffc;text-decoration:none;font-size:.9rem;display:inline-flex;align-items:center;gap:6px;margin-bottom:24px;transition:color .2s}.blog-post-header .back-link:hover{color:#fff}.blog-post-header h1{font-size:2.2rem;font-weight:700;line-height:1.3;margin-bottom:16px}.blog-meta{font-size:.88rem;color:#ffffffbf}.blog-meta span{margin-right:20px}.tag-badge{display:inline-block;background:#fff3;color:#fff;border-radius:999px;padding:4px 14px;font-size:.8rem;font-weight:600;margin-right:6px}.blog-body{background:#fff;border-radius:10px;box-shadow:0 2px 20px #00000012;padding:48px 56px;margin-top:-30px;margin-bottom:60px;max-width:820px}.blog-body h2{font-size:1.4rem;font-weight:700;color:var(--accent-color, #695aa6);margin:36px 0 12px}.blog-body h3{font-size:1.1rem;font-weight:700;color:#393e46;margin:28px 0 10px}.blog-body p{color:#444;line-height:1.85;margin-bottom:16px}.blog-body ul,.blog-body ol{color:#444;line-height:1.85;padding-left:24px;margin-bottom:16px}.blog-body li{margin-bottom:6px}.blog-body code:not(pre code){background:var(--callout-bg, #f3f0ff);color:var(--accent-color, #695aa6);padding:2px 7px;border-radius:4px;font-size:.9em}.blog-body pre{background:#1e1e2e;color:#cdd6f4;border-radius:8px;padding:20px 24px;overflow-x:auto;margin:20px 0;font-size:.88rem;line-height:1.7}.blog-body pre code{background:none!important;color:inherit!important;padding:0!important}.blog-body table{width:100%;border-collapse:collapse;margin:20px 0;font-size:.9rem}.blog-body th{background:var(--callout-bg, #f3f0ff);color:var(--accent-color, #695aa6);padding:10px 14px;text-align:left}.blog-body td{padding:10px 14px;border-bottom:1px solid #eee;color:#444}.callout{border-left:4px solid var(--accent-color, #695aa6);background:var(--callout-bg, #f3f0ff);border-radius:0 8px 8px 0;padding:14px 20px;margin:20px 0;color:#444}.callout.tip{border-left-color:#ff6d02;background:#fff5ec}.custom-navbar{position:relative!important}.custom-navbar .logo{color:#695aa6}#blog-post-nav{margin-bottom:48px;max-width:820px}.blog-post-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #eee;padding-top:28px}.blog-nav-btn{display:flex;align-items:center;gap:12px;text-decoration:none;color:#393e46;padding:12px 16px;border-radius:8px;border:1px solid #eee;background:#fff;transition:border-color .2s,box-shadow .2s;min-width:0;max-width:42%}.blog-nav-btn:hover{border-color:#695aa6;box-shadow:0 2px 10px #695aa61f;color:#695aa6;text-decoration:none}.blog-nav-disabled{visibility:hidden}.blog-nav-arrow{font-size:1.3rem;color:#695aa6;flex-shrink:0}.blog-nav-label{display:flex;flex-direction:column;min-width:0}.blog-nav-hint{font-size:.75rem;color:#999;text-transform:uppercase;letter-spacing:.05em}.blog-nav-title{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.blog-nav-next .blog-nav-label{text-align:right}.blog-nav-all{font-size:.85rem;color:#695aa6;text-decoration:none;padding:8px 16px;border-radius:999px;border:1px solid #695aa6;white-space:nowrap;flex-shrink:0;transition:background .2s,color .2s}.blog-nav-all:hover{background:#695aa6;color:#fff;text-decoration:none}@media (max-width: 768px){.blog-body{padding:28px 20px}.blog-post-header h1{font-size:1.6rem}}
+</style></head> <body> <nav class="custom-navbar"> <div class="container"> <a class="logo" href="/">Sudoshil</a> <ul class="nav"> <li class="item"><a class="link" href="/#home">Home</a></li> <li class="item"><a class="link" href="/#about">About</a></li> <li class="item"><a class="link" href="/#portfolio">Projects</a></li> <li class="item"><a class="link active" href="/#blog">Blog</a></li> <li class="item"><a class="link" href="/#contact">Contact</a></li> </ul> <a href="javascript:void(0)" id="nav-toggle" class="hamburger hamburger--elastic"> <div class="hamburger-box"><div class="hamburger-inner"></div></div> </a> </div> </nav> <div class="blog-post-header" style="background: linear-gradient(135deg, #1a1f3a 0%, #3776ab 100%);"> <div class="container"> <a class="back-link" href="/#blog"><i class="ti-arrow-left"></i> Back to Blog</a> <div class="mb-2"> <span class="tag-badge">Python</span><span class="tag-badge">Asyncio</span><span class="tag-badge">Concurrency</span> </div> <h1>Python Asyncio: The Zen of Not Waiting</h1> <div class="blog-meta"> <span><i class="ti-calendar"></i>&nbsp; May 2025</span> <span><i class="ti-time"></i>&nbsp; 14 min read</span> <span><i class="ti-user"></i>&nbsp; Sushil Kumar</span> </div> </div> </div> <div class="container"> <div class="blog-body">  <p>Imagine you’re a chef. You put a pot of water on the stove to boil. Do you stand there staring at it for 10 minutes? Or do you chop vegetables, prep the sauce, and check back when it bubbles?</p>
+<p>That choice — <strong>stand and wait</strong> vs. <strong>do something useful while waiting</strong> — is exactly what Python’s concurrency tools are about.</p>
+<h2 id="the-default-python-does-one-thing-at-a-time">The Default: Python Does One Thing at a Time</h2>
+<p>Out of the box, Python runs your code <strong>sequentially</strong> in a single thread. Every statement finishes before the next one starts.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> time</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> fetch_user</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    time.sleep(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">)        </span><span style="color:#6A737D"># simulates a slow API call</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#9ECBFF"> "Alice"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> fetch_orders</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    time.sleep(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">)        </span><span style="color:#6A737D"># another slow API call</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">"order1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"order2"</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">start </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> time.time()</span></span>
+<span class="line"><span style="color:#E1E4E8">user   </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> fetch_user()    </span><span style="color:#6A737D"># waits 2 seconds</span></span>
+<span class="line"><span style="color:#E1E4E8">orders </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> fetch_orders()  </span><span style="color:#6A737D"># waits another 2 seconds</span></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"Done in </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">time.time() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> start</span><span style="color:#F97583">:.1f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">s"</span><span style="color:#E1E4E8">)  </span><span style="color:#6A737D"># → 4.0s</span></span>
+<span class="line"></span></code></pre>
+<p>Both calls are independent — neither needs the other to finish first. Yet we waited <strong>4 seconds</strong> when 2 would have been enough. That’s the problem concurrency solves.</p>
+<h2 id="three-tools-three-philosophies">Three Tools, Three Philosophies</h2>
+<p>Python gives you three ways to do multiple things “at once”:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Tool</th><th>Mechanism</th><th>Best for</th><th>GIL?</th></tr></thead><tbody><tr><td><code>threading</code></td><td>Multiple threads, one process</td><td>I/O-bound tasks</td><td>Limited by it</td></tr><tr><td><code>multiprocessing</code></td><td>Multiple processes</td><td>CPU-bound tasks</td><td>Bypasses it</td></tr><tr><td><code>asyncio</code></td><td>Single thread, cooperative</td><td>I/O-bound, high concurrency</td><td>Not relevant</td></tr></tbody></table>
+<p>Let’s understand each one properly.</p>
+<hr>
+<h2 id="threads--concurrent-but-constrained">Threads — Concurrent but Constrained</h2>
+<p>A <strong>thread</strong> is a lightweight unit of execution inside your process. All threads share the same memory, so they can read and write the same variables.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> threading</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> time</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">results </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> {}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> fetch_user</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    time.sleep(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    results[</span><span style="color:#9ECBFF">"user"</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "Alice"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> fetch_orders</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    time.sleep(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    results[</span><span style="color:#9ECBFF">"orders"</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">"order1"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"order2"</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">start </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> time.time()</span></span>
+<span class="line"><span style="color:#E1E4E8">t1 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> threading.Thread(</span><span style="color:#FFAB70">target</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">fetch_user)</span></span>
+<span class="line"><span style="color:#E1E4E8">t2 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> threading.Thread(</span><span style="color:#FFAB70">target</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">fetch_orders)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">t1.start()   </span><span style="color:#6A737D"># start both</span></span>
+<span class="line"><span style="color:#E1E4E8">t2.start()</span></span>
+<span class="line"><span style="color:#E1E4E8">t1.join()    </span><span style="color:#6A737D"># wait for both to finish</span></span>
+<span class="line"><span style="color:#E1E4E8">t2.join()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"Done in </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">time.time() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> start</span><span style="color:#F97583">:.1f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">s"</span><span style="color:#E1E4E8">)  </span><span style="color:#6A737D"># → ~2.0s ✓</span></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(results)</span></span>
+<span class="line"></span></code></pre>
+<p>Both calls run <strong>concurrently</strong> and we’re done in ~2 seconds instead of 4.</p>
+<h3 id="the-gil-problem">The GIL Problem</h3>
+<p>Here’s the catch. CPython has a <strong>Global Interpreter Lock (GIL)</strong> — a mutex that allows only <strong>one thread to execute Python bytecode at a time</strong>.</p>
+<p>Think of it like a single microphone in a meeting room. Multiple people (threads) are present, but only one can speak (execute Python) at a time. While one person is waiting for an answer from another room (I/O), they put the mic down, and someone else can pick it up.</p>
+<p>This means:</p>
+<ul>
+<li><strong>I/O-bound tasks</strong>: Threads work well. While one thread waits for a network response, others run.</li>
+<li><strong>CPU-bound tasks</strong>: Threads don’t help. Only one thread runs at a time anyway.</li>
+</ul>
+<div class="callout">
+<strong>Rule of thumb:</strong> Use threads for I/O-bound work where tasks spend most of their time waiting — not for heavy computation.
+</div>
+<hr>
+<h2 id="processes--true-parallelism">Processes — True Parallelism</h2>
+<p>For CPU-heavy work (image processing, number crunching, ML inference), you need <code>multiprocessing</code>. Each process gets its own Python interpreter and its own GIL, so they run <strong>truly in parallel</strong> on separate CPU cores.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> multiprocessing </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> Process, Queue</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> time</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> crunch_numbers</span><span style="color:#E1E4E8">(result_queue, label):</span></span>
+<span class="line"><span style="color:#E1E4E8">    total </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> sum</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">range</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">10_000_000</span><span style="color:#E1E4E8">))   </span><span style="color:#6A737D"># CPU-intensive</span></span>
+<span class="line"><span style="color:#E1E4E8">    result_queue.put((label, total))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#79B8FF"> __name__</span><span style="color:#F97583"> ==</span><span style="color:#9ECBFF"> "__main__"</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    q </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Queue()</span></span>
+<span class="line"><span style="color:#E1E4E8">    start </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> time.time()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    p1 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Process(</span><span style="color:#FFAB70">target</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">crunch_numbers, </span><span style="color:#FFAB70">args</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">(q, </span><span style="color:#9ECBFF">"worker-1"</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">    p2 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Process(</span><span style="color:#FFAB70">target</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">crunch_numbers, </span><span style="color:#FFAB70">args</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">(q, </span><span style="color:#9ECBFF">"worker-2"</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">    p1.start(); p2.start()</span></span>
+<span class="line"><span style="color:#E1E4E8">    p1.join();  p2.join()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"Done in </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">time.time() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> start</span><span style="color:#F97583">:.1f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">s"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(q.get(), q.get())</span></span>
+<span class="line"></span></code></pre>
+<p>The tradeoff: <strong>processes are expensive to create</strong> (each spawns a new Python interpreter) and <strong>don’t share memory</strong> — you pass data via queues or pipes.</p>
+<hr>
+<h2 id="asyncio--the-elegant-solution-for-io">Asyncio — The Elegant Solution for I/O</h2>
+<p><code>asyncio</code> takes a completely different approach. Instead of many threads or processes, it uses <strong>one thread</strong> and <strong>one event loop</strong> that switches between tasks extremely fast — giving the illusion of parallelism.</p>
+<p>Back to the chef analogy:</p>
+<ul>
+<li><strong>Threads</strong>: hire multiple chefs</li>
+<li><strong>Asyncio</strong>: one skilled chef who never stands idle — always doing something useful while waiting</li>
+</ul>
+<p>The key insight: for I/O-bound work, your program spends <strong>most of its time waiting</strong> (for network, disk, database). That waiting time is wasted if you’re doing nothing. Asyncio fills that gap.</p>
+<hr>
+<h2 id="coroutines--functions-that-can-pause">Coroutines — Functions That Can Pause</h2>
+<p>A <strong>coroutine</strong> is a special function that can <strong>pause itself</strong> mid-execution, let other code run, and later <strong>resume from exactly where it stopped</strong>.</p>
+<p>You define one with <code>async def</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> asyncio</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> make_coffee</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Starting coffee..."</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    await</span><span style="color:#E1E4E8"> asyncio.sleep(</span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">)   </span><span style="color:#6A737D"># pause here for 3 seconds (simulates waiting)</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Coffee ready!"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#9ECBFF"> "☕"</span></span>
+<span class="line"></span></code></pre>
+<div class="callout">
+<strong>Important:</strong> Calling <code>make_coffee()</code> does NOT run it. It returns a coroutine object — a recipe, not a result. You must <code>await</code> it or schedule it as a task to actually execute it.
+</div>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># Wrong — this does nothing:</span></span>
+<span class="line"><span style="color:#E1E4E8">result </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> make_coffee()   </span><span style="color:#6A737D"># just creates the object, prints nothing</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Right — this runs it:</span></span>
+<span class="line"><span style="color:#E1E4E8">result </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> make_coffee()          </span><span style="color:#6A737D"># inside another async function</span></span>
+<span class="line"><span style="color:#E1E4E8">asyncio.run(make_coffee())            </span><span style="color:#6A737D"># at the top level</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="the-await-keyword--yielding-control">The <code>await</code> Keyword — Yielding Control</h2>
+<p><code>await</code> does two things simultaneously:</p>
+<ol>
+<li><strong>Suspends</strong> the current coroutine until the awaited operation finishes</li>
+<li><strong>Hands control back</strong> to the event loop so other coroutines can run</li>
+</ol>
+<p>This is the crucial difference from a regular <code>time.sleep()</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># Blocking — freezes everything for 3 seconds:</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> time</span></span>
+<span class="line"><span style="color:#E1E4E8">time.sleep(</span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Non-blocking — pauses THIS coroutine, lets others run:</span></span>
+<span class="line"><span style="color:#F97583">await</span><span style="color:#E1E4E8"> asyncio.sleep(</span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span></code></pre>
+<p>Think of <code>await</code> as saying: <em>“I’ll be busy for a bit — event loop, go do something else, and come back to me when I’m ready.”</em></p>
+<hr>
+<h2 id="the-event-loop--the-traffic-controller">The Event Loop — The Traffic Controller</h2>
+<p>The event loop is the heart of <code>asyncio</code>. It’s a scheduler that:</p>
+<ol>
+<li>Maintains a queue of ready coroutines</li>
+<li>Picks the next ready one</li>
+<li>Runs it until it hits an <code>await</code></li>
+<li>While it’s waiting, runs another coroutine</li>
+<li>When the wait completes, puts it back in the ready queue</li>
+</ol>
+<p>Here’s what actually happens step by step when you run two coroutines concurrently:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Event Loop Timeline:</span></span>
+<span class="line"><span>─────────────────────────────────────────────────</span></span>
+<span class="line"><span>t=0.0s   Loop picks Task A → runs → hits `await sleep(2)` → pauses A</span></span>
+<span class="line"><span>t=0.0s   Loop picks Task B → runs → hits `await sleep(2)` → pauses B</span></span>
+<span class="line"><span>t=2.0s   Both sleeps done → resumes A → resumes B</span></span>
+<span class="line"><span>t=2.0s   Both finish — total time: ~2 seconds (not 4!)</span></span>
+<span class="line"><span>─────────────────────────────────────────────────</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>You start the event loop with <code>asyncio.run()</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#F97583">    await</span><span style="color:#E1E4E8"> some_coroutine()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">asyncio.run(main())   </span><span style="color:#6A737D"># creates loop → runs main → closes loop</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="asynciogather--running-many-at-once"><code>asyncio.gather()</code> — Running Many at Once</h2>
+<p><code>asyncio.gather()</code> is how you run multiple coroutines <strong>concurrently</strong> and collect all their results:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> asyncio</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> time</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> fetch_data</span><span style="color:#E1E4E8">(name, delay):</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"  → Fetching </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">name</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">..."</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    await</span><span style="color:#E1E4E8"> asyncio.sleep(delay)       </span><span style="color:#6A737D"># simulate network call</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"  ✓ </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">name</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF"> done"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#F97583"> f</span><span style="color:#9ECBFF">"data from </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">name</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    start </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> time.time()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    results </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> asyncio.gather(</span></span>
+<span class="line"><span style="color:#E1E4E8">        fetch_data(</span><span style="color:#9ECBFF">"users"</span><span style="color:#E1E4E8">,   </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">        fetch_data(</span><span style="color:#9ECBFF">"orders"</span><span style="color:#E1E4E8">,  </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">        fetch_data(</span><span style="color:#9ECBFF">"products"</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    elapsed </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> time.time() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> start</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">All done in </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">elapsed</span><span style="color:#F97583">:.1f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">s"</span><span style="color:#E1E4E8">)   </span><span style="color:#6A737D"># → ~2.0s, not 6.0s!</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(results)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">asyncio.run(main())</span></span>
+<span class="line"></span></code></pre>
+<p><strong>Visual execution timeline:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Sequential (6s total):</span></span>
+<span class="line"><span>users:    ████████ (2s)</span></span>
+<span class="line"><span>orders:             ████████ (2s)</span></span>
+<span class="line"><span>products:                     ████████ (2s)</span></span>
+<span class="line"><span>          0    1    2    3    4    5    6</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>asyncio.gather (~2s total):</span></span>
+<span class="line"><span>users:    ████████ (2s)</span></span>
+<span class="line"><span>orders:   ████████ (2s)</span></span>
+<span class="line"><span>products: ████████ (2s)</span></span>
+<span class="line"><span>          0    1    2</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>All three run during the same 2-second window.</p>
+<div class="callout tip">
+<strong>Error handling:</strong> By default, if one coroutine in <code>gather()</code> raises an exception, the others are cancelled. Pass <code>return_exceptions=True</code> to collect errors as values instead of stopping everything.
+</div>
+<hr>
+<h2 id="common-pitfall-1-forgetting-await">Common Pitfall 1: Forgetting <code>await</code></h2>
+<p>This is the most common mistake. It’s silent — no error, the coroutine just never runs:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> send_email</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#F97583">    await</span><span style="color:#E1E4E8"> asyncio.sleep(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Email sent!"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    send_email()   </span><span style="color:#6A737D"># ❌ creates coroutine object, does nothing</span></span>
+<span class="line"><span style="color:#F97583">    await</span><span style="color:#E1E4E8"> send_email()              </span><span style="color:#6A737D"># ✅ runs it</span></span>
+<span class="line"><span style="color:#E1E4E8">    asyncio.create_task(send_email())  </span><span style="color:#6A737D"># ✅ schedules it as a background task</span></span>
+<span class="line"></span></code></pre>
+<p>Python 3.8+ will emit a <code>RuntimeWarning: coroutine 'send_email' was never awaited</code> — but only as a warning, not an error. Always watch for it.</p>
+<hr>
+<h2 id="common-pitfall-2-blocking-the-event-loop">Common Pitfall 2: Blocking the Event Loop</h2>
+<p>Asyncio uses a <strong>single thread</strong>. If you call a regular blocking function inside a coroutine, you freeze the entire event loop — nothing else can run:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> time, asyncio, requests</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> bad_fetch</span><span style="color:#E1E4E8">(url):</span></span>
+<span class="line"><span style="color:#E1E4E8">    response </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> requests.get(url)    </span><span style="color:#6A737D"># ❌ BLOCKS the whole event loop!</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> response.text</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> good_fetch</span><span style="color:#E1E4E8">(url):</span></span>
+<span class="line"><span style="color:#F97583">    import</span><span style="color:#E1E4E8"> aiohttp</span></span>
+<span class="line"><span style="color:#F97583">    async</span><span style="color:#F97583"> with</span><span style="color:#E1E4E8"> aiohttp.ClientSession() </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> session:</span></span>
+<span class="line"><span style="color:#F97583">        async</span><span style="color:#F97583"> with</span><span style="color:#E1E4E8"> session.get(url) </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> response:   </span><span style="color:#6A737D"># ✅ non-blocking</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> response.text()</span></span>
+<span class="line"></span></code></pre>
+<p><strong>The rule</strong>: inside an <code>async def</code> function, never call synchronous blocking code (<code>time.sleep</code>, <code>requests.get</code>, file reads with plain <code>open</code>). Use their async equivalents instead.</p>
+<p>If you absolutely must call blocking code (e.g., a legacy library), offload it to a thread:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> asyncio</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> slow_legacy_function</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#F97583">    import</span><span style="color:#E1E4E8"> time</span></span>
+<span class="line"><span style="color:#E1E4E8">    time.sleep(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#9ECBFF"> "done"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    loop </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> asyncio.get_event_loop()</span></span>
+<span class="line"><span style="color:#6A737D">    # runs in a thread pool — won't block the event loop</span></span>
+<span class="line"><span style="color:#E1E4E8">    result </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> loop.run_in_executor(</span><span style="color:#79B8FF">None</span><span style="color:#E1E4E8">, slow_legacy_function)</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(result)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="when-to-use-what--quick-guide">When to Use What — Quick Guide</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Is the bottleneck CPU computation (matrix math, compression, ML)?</span></span>
+<span class="line"><span>  └── YES → multiprocessing</span></span>
+<span class="line"><span>  └── NO (it's mostly waiting — network, DB, disk)</span></span>
+<span class="line"><span>        ├── Need simple parallelism, small number of tasks?</span></span>
+<span class="line"><span>        │     └── threading</span></span>
+<span class="line"><span>        └── High concurrency (100s of connections), modern codebase?</span></span>
+<span class="line"><span>              └── asyncio  ← usually the best choice for I/O today</span></span>
+<span class="line"><span></span></span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Scenario</th><th>Best Tool</th></tr></thead><tbody><tr><td>Scraping 1000 URLs</td><td><code>asyncio</code> + <code>aiohttp</code></td></tr><tr><td>Resizing 500 images</td><td><code>multiprocessing</code></td></tr><tr><td>10 simultaneous DB queries</td><td><code>asyncio</code> + async DB driver</td></tr><tr><td>Calling a blocking legacy library</td><td><code>threading</code> or <code>run_in_executor</code></td></tr><tr><td>Simple scripts with a few parallel tasks</td><td><code>threading</code></td></tr></tbody></table>
+<hr>
+<h2 id="putting-it-all-together">Putting It All Together</h2>
+<p>Here’s a complete, real-world async script that fetches multiple API endpoints concurrently, handles errors gracefully, and shows timing:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> asyncio</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> time</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Simulated async API calls</span></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> fetch</span><span style="color:#E1E4E8">(endpoint, delay, should_fail</span><span style="color:#F97583">=</span><span style="color:#79B8FF">False</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#F97583">    await</span><span style="color:#E1E4E8"> asyncio.sleep(delay)</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> should_fail:</span></span>
+<span class="line"><span style="color:#F97583">        raise</span><span style="color:#79B8FF"> ValueError</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">endpoint</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF"> returned 500"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> {</span><span style="color:#9ECBFF">"endpoint"</span><span style="color:#E1E4E8">: endpoint, </span><span style="color:#9ECBFF">"data"</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"response from </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">endpoint</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">async</span><span style="color:#F97583"> def</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#E1E4E8">    start </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> time.time()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    tasks </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        fetch(</span><span style="color:#9ECBFF">"/users"</span><span style="color:#E1E4E8">,    </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">        fetch(</span><span style="color:#9ECBFF">"/orders"</span><span style="color:#E1E4E8">,   </span><span style="color:#79B8FF">1.5</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">        fetch(</span><span style="color:#9ECBFF">"/products"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">should_fail</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">),   </span><span style="color:#6A737D"># this one will fail</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # return_exceptions=True means errors become values, not crashes</span></span>
+<span class="line"><span style="color:#E1E4E8">    results </span><span style="color:#F97583">=</span><span style="color:#F97583"> await</span><span style="color:#E1E4E8"> asyncio.gather(</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">tasks, </span><span style="color:#FFAB70">return_exceptions</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> result </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> results:</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#79B8FF"> isinstance</span><span style="color:#E1E4E8">(result, </span><span style="color:#79B8FF">Exception</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#79B8FF">            print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"  ✗ Error: </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">result</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">        else</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#79B8FF">            print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"  ✓ </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">result[</span><span style="color:#9ECBFF">'endpoint'</span><span style="color:#E1E4E8">]</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">: </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">result[</span><span style="color:#9ECBFF">'data'</span><span style="color:#E1E4E8">]</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">Total time: </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">time.time() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> start</span><span style="color:#F97583">:.1f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">s"</span><span style="color:#E1E4E8">)   </span><span style="color:#6A737D"># ~2.0s</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">asyncio.run(main())</span></span>
+<span class="line"></span></code></pre>
+<p><strong>Output:</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>  ✓ /users: response from /users</span></span>
+<span class="line"><span>  ✓ /orders: response from /orders</span></span>
+<span class="line"><span>  ✗ Error: /products returned 500</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Total time: 2.0s</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Three “API calls”, one failure handled cleanly, all done in the time of the slowest single call.</p>
+<hr>
+<h2 id="summary">Summary</h2>
+<ul>
+<li><strong>Synchronous Python</strong> runs one thing at a time — simple but wasteful when waiting.</li>
+<li><strong>Threads</strong> add concurrency within one process — good for I/O, limited by the GIL for CPU work.</li>
+<li><strong>Processes</strong> give true parallelism across CPU cores — best for computation-heavy tasks.</li>
+<li><strong>Asyncio</strong> uses cooperative multitasking in a single thread — the modern default for I/O-heavy Python.</li>
+<li>A <strong>coroutine</strong> (<code>async def</code>) is a function that can pause at <code>await</code> and resume later.</li>
+<li>The <strong>event loop</strong> is the scheduler that runs coroutines and switches between them at every <code>await</code>.</li>
+<li><code>asyncio.gather()</code> runs multiple coroutines concurrently and collects all results.</li>
+<li>Never call blocking code inside a coroutine — it freezes the event loop.</li>
+</ul>
+<div class="callout">
+<strong>Where to go next:</strong> Once you're comfortable with these basics, explore <code>asyncio.create_task()</code> for fire-and-forget background work, <code>asyncio.Queue</code> for producer-consumer patterns, and <code>aiohttp</code> / <code>httpx</code> for real async HTTP clients.
+</div>  </div> </div> <div class="container"> <div id="blog-post-nav"> <div class="blog-post-nav-inner"> <a href="/blog/prompt-engineering-tips" class="blog-nav-btn blog-nav-prev"> <span class="blog-nav-arrow">&#8592;</span> <span class="blog-nav-label"> <span class="blog-nav-hint">Previous</span> <span class="blog-nav-title">Your AI Is Only as Smart as Your Prompt</span> </span> </a> <a href="/#blog" class="blog-nav-all">All Posts</a> <a href="/blog/getting-started-amazon-connect" class="blog-nav-btn blog-nav-next"> <span class="blog-nav-label"> <span class="blog-nav-hint">Next</span> <span class="blog-nav-title">Getting Started with Amazon Connect</span> </span> <span class="blog-nav-arrow">&#8594;</span> </a> </div> </div> </div> <div class="container"> <footer class="footer"> <p class="mb-0">Copyright 2026 &copy; Sudoshil</p> <div class="social-links text-right m-auto ml-sm-auto"> <a href="https://github.com/isushilpuri" class="link" rel="noreferrer" target="_blank"> <i class="ti-github"></i> </a> <a href="https://www.linkedin.com/in/sushil-kumar-4347b4173" class="link" rel="noreferrer" target="_blank"> <i class="ti-linkedin"></i> </a> <a href="https://x.com/sudoshil" class="link" rel="noreferrer" target="_blank"> <i class="ti-twitter-alt"></i> </a> </div> </footer> </div> <script>
+      document.getElementById('nav-toggle').addEventListener('click', function() {
+        this.classList.toggle('is-active');
+        document.querySelector('ul.nav').classList.toggle('show');
+      });
+    </script> </body> </html>
