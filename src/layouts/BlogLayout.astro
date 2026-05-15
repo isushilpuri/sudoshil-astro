@@ -24,6 +24,21 @@ const { title, description, date, readTime, tags, headerGradient, accentColor, c
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={Astro.url.href} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={`${title} | Sudoshil`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:site_name" content="Sudoshil" />
+
+    <!-- Twitter / X card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={`${title} | Sudoshil`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:site" content="@sudoshil" />
+
     <title>{title} | Sudoshil</title>
     <link rel="stylesheet" href="/assets/vendors/themify-icons/css/themify-icons.css" />
     <link rel="stylesheet" href="/assets/css/meyawo.css" />

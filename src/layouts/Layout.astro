@@ -2,11 +2,13 @@
 interface Props {
   title?: string;
   description?: string;
+  canonicalUrl?: string;
 }
 
 const {
   title = 'Sushil Kumar | Contact Center Engineer',
   description = 'Contact Center Engineer specialising in Amazon Connect, Lex V2, and AWS Lambda.',
+  canonicalUrl = Astro.url.href,
 } = Astro.props;
 ---
 
@@ -17,6 +19,21 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content={description} />
     <meta name="author" content="Sushil Kumar" />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph (controls what Google + social media show) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="Sudoshil" />
+
+    <!-- Twitter / X card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:site" content="@sudoshil" />
+
     <title>{title}</title>
     <link rel="stylesheet" href="/assets/vendors/themify-icons/css/themify-icons.css" />
     <link rel="stylesheet" href="/assets/css/meyawo.css" />
