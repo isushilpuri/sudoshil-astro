@@ -11195,25 +11195,35 @@ p {
 
 .portfolio-card .portfolio-card-img {
   width: 100%;
+  display: block;
+  aspect-ratio: 1 / 1;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 .portfolio-card .portfolio-card-overlay {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   text-align: center;
-  visibility: hidden;
-  opacity: 0;
-  background-image: -webkit-linear-gradient(bottom, #e1dfed 0%, rgba(225, 223, 237, 0.7) 99%, rgba(225, 223, 237, 0.8) 100%);
-  background-image: linear-gradient(to top, #e1dfed 0%, rgba(225, 223, 237, 0.7) 99%, rgba(225, 223, 237, 0.8) 100%);
-  -webkit-transition: all, 0.3s;
-  transition: all, 0.3s;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
+  visibility: visible;
+  opacity: 1;
+  padding: 30px 16px 18px;
+  background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.45) 45%, rgba(0, 0, 0, 0) 100%);
+  background-image: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.45) 45%, rgba(0, 0, 0, 0) 100%);
+  -webkit-transition: all 0.35s ease;
+  transition: all 0.35s ease;
   overflow: hidden;
 }
 
@@ -11226,21 +11236,17 @@ p {
 
 .portfolio-card .portfolio-card-overlay .portfolio-card-caption {
   display: block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
+  position: static;
+  -webkit-transform: none;
+      -ms-transform: none;
+          transform: none;
   width: 100%;
 }
 
-.portfolio-card:hover .portfolio-card-overlay {
-  opacity: 1;
-  visibility: visible;
-  width: 100%;
-  height: 100%;
-  border-radius: 0;
+.portfolio-card:hover .portfolio-card-overlay,
+.portfolio-card:focus-within .portfolio-card-overlay {
+  background-image: -webkit-linear-gradient(bottom, rgba(105, 90, 166, 0.95) 0%, rgba(105, 90, 166, 0.9) 100%);
+  background-image: linear-gradient(to top, rgba(105, 90, 166, 0.95) 0%, rgba(105, 90, 166, 0.9) 100%);
 }
 
 @media (max-width: 767.98px) {

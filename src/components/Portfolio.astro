@@ -1,4 +1,5 @@
 ---
+import { projects } from "../data/portfolio.js";
 ---
 
 <section class="section" id="portfolio">
@@ -6,67 +7,42 @@
     <p class="section-subtitle">What I Did ?</p>
     <h6 class="section-title mb-6">Portfolio</h6>
     <div class="row">
-      <div class="col-md-4">
-        <a class="portfolio-card">
-          <img src="/assets/imgs/folio-c.jpg" class="portfolio-card-img" alt="Wealth Management IVR" />
-          <span class="portfolio-card-overlay">
-            <span class="portfolio-card-caption">
-              <h4>Wealth Management IVR</h4>
-              <p class="font-weight-normal">
-                Enterprise IVR cloud migration to AWS — Amazon Connect, Lex V2 &amp; Lambda. Led full delivery: requirement analysis, contact flow design, sprint planning &amp; cross-team coordination.
-              </p>
-              <div class="mt-2">
-                <span class="folio-tag">Amazon Connect</span>
-                <span class="folio-tag">Lex V2</span>
-                <span class="folio-tag">Lambda</span>
-              </div>
-            </span>
-          </span>
-        </a>
-      </div>
-      <div class="col-md-4">
-        <a class="portfolio-card">
-          <img class="portfolio-card-img" src="/assets/imgs/folio-card.jpg" alt="Retail Payment Services IVR" />
-          <span class="portfolio-card-overlay">
-            <span class="portfolio-card-caption">
-              <h4>Retail Payment Services</h4>
-              <p class="font-weight-normal">
-                Credit card IVR with NLU Main Menu &amp; async Lambda — boosted speech recognition to 82% and IVR containment to 60% for critical payment flows.
-              </p>
-              <div class="mt-2">
-                <span class="folio-tag">82% Recognition</span>
-                <span class="folio-tag">60% Containment</span>
-                <span class="folio-tag">NLU</span>
-              </div>
-            </span>
-          </span>
-        </a>
-      </div>
-      <div class="col-md-4">
-        <span class="portfolio-card">
-          <img class="portfolio-card-img" src="/assets/imgs/folio-chat.jpg" alt="Chat App" />
-          <span class="portfolio-card-overlay">
-            <span class="portfolio-card-caption">
-              <h4>Chat App</h4>
-              <p class="font-weight-normal">Web Socket real-time chat application.</p>
-              <div class="mt-2">
-                <a
-                  style="border:none;border-radius:999px;padding:10px 20px;background-color:#007bff;color:white;font-size:16px;cursor:pointer;"
-                  rel="noreferrer"
-                  target="_blank"
-                  href="https://ping-me.onrender.com/"
-                >See Live</a>
-                <a
-                  style="border:none;border-radius:999px;padding:10px 20px;background-color:white;color:#007bff;font-size:16px;cursor:pointer;"
-                  rel="noreferrer"
-                  target="_blank"
-                  href="https://github.com/isushilpuri/node3-chat-app"
-                >Source Code</a>
-              </div>
-            </span>
-          </span>
-        </span>
-      </div>
+      {
+        projects.map((project) => (
+          <div class="col-md-4">
+            <div class="portfolio-card">
+              <img class="portfolio-card-img" src={project.image} alt={project.title} />
+              <span class="portfolio-card-overlay">
+                <span class="portfolio-card-caption">
+                  <h4>{project.title}</h4>
+                  <p class="font-weight-normal">{project.description}</p>
+                  {project.tags && (
+                    <div class="mt-2">
+                      {project.tags.map((tag) => (
+                        <span class="folio-tag">{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                  {project.links && (
+                    <div class="mt-2">
+                      {project.links.map((link, i) => (
+                        <a
+                          class={`folio-btn ${i === 0 ? "folio-btn-primary" : "folio-btn-outline"}`}
+                          rel="noreferrer"
+                          target="_blank"
+                          href={link.url}
+                        >
+                          {link.label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </span>
+              </span>
+            </div>
+          </div>
+        ))
+      }
     </div>
   </div>
 </section>
