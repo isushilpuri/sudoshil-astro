@@ -7,7 +7,10 @@
 //
 // Fields (all required):
 //   image        Path to the icon under /public, e.g. "/assets/imgs/my-icon.svg".
-//                SVGs work best; the icon shrinks slightly on hover.
+//                SVGs work best; the icon shrinks slightly on hover. Any image
+//                dimensions/aspect ratio are fine — the card renders every icon
+//                in the same fixed square box (object-fit: contain), so new
+//                services automatically match the size of the existing ones.
 //   title        Service name.
 //   description  Short summary, revealed on hover. Write "&" normally.
 // ---------------------------------------------------------------------------
@@ -30,6 +33,12 @@ export const services = [
     title: "AWS Lambda",
     description:
       "Engineered Python Lambda codehooks for Connect & Lex — user authentication, DynamoDB integration, data validation, and async API calls. Async Lambda implementation helped boost IVR containment to 60% on critical payment features.",
+  },
+  {
+    image: "/assets/imgs/connect-ai-agent.svg",
+    title: "Connect AI Agent",
+    description:
+      "Architected IVR self-service orchestration AI Agents for features like Credit Card Payments and IT Helpdesk  to provide real-time generative AI assistance and automate self-service workflows using integrated knowledge bases and backend tools.",
   },
   {
     image: "/assets/imgs/python-5.svg",

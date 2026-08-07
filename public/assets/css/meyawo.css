@@ -11146,6 +11146,8 @@ p {
 .service-card .body img.icon {
   margin-top: 40px;
   width: 55px;
+  height: 55px;
+  object-fit: contain;
   margin-bottom: 25px;
   -webkit-transition: all, 0.3s;
   transition: all, 0.3s;
@@ -11177,6 +11179,7 @@ p {
 .service-card:hover .body img.icon {
   margin-top: 5px;
   width: 45px;
+  height: 45px;
   margin-bottom: 15px;
 }
 
