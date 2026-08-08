@@ -1,23 +1,123 @@
 ---
+const socials = [
+  {
+    label: 'GitHub',
+    href: 'https://github.com/isushilpuri',
+    path: 'M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02.8-.22 1.65-.33 2.5-.33.85 0 1.7.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12c0-5.52-4.48-10-10-10z',
+  },
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/sushil-kumar-4347b4173',
+    path: 'M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zM8.34 18.34V9.9H5.67v8.44h2.67zM7 8.67a1.55 1.55 0 1 0 0-3.1 1.55 1.55 0 0 0 0 3.1zm11.34 9.67v-4.62c0-2.47-1.32-3.62-3.08-3.62-1.42 0-2.06.78-2.41 1.33V9.9h-2.67c.04.75 0 8.44 0 8.44h2.67v-4.71c0-.24.02-.48.09-.65.19-.48.63-.98 1.36-.98.96 0 1.35.73 1.35 1.8v4.54h2.68z',
+  },
+  {
+    label: 'X',
+    href: 'https://x.com/sudoshil',
+    path: 'M18.9 2.5h3.3l-7.2 8.24L23.7 21.5h-6.63l-5.2-6.8-5.94 6.8H2.6l7.7-8.8L2.1 2.5h6.8l4.7 6.22L18.9 2.5zm-1.16 17h1.83L7.34 4.4H5.38l12.36 15.1z',
+  },
+];
 ---
 
-<header id="home" class="header">
-  <div class="overlay"></div>
-  <div class="header-content container">
-    <h1 class="header-title">
-      <span class="up">HI!</span>
-      <span class="down">I am Sushil</span>
-    </h1>
-    <p class="header-subtitle">Contact Center Engineer</p>
-    <button class="btn btn-primary" id="vis-profile">Visit My Works</button>
+<header class="hero" id="home">
+  <div class="container hero-grid">
+    <div>
+      <div class="hero-status reveal">
+        <span class="status-dot"></span> Available for new projects
+      </div>
+
+      <h1 class="reveal" data-delay="1">
+        <span class="line">Hi, I'm Sushil.</span>
+        <span class="line gradient-text">I build conversational AI.</span>
+      </h1>
+
+      <p class="hero-role reveal" data-delay="2">
+        <span class="accent">&gt;</span> Contact Center Engineer
+        <span class="term-cursor" style="height:1em"></span>
+      </p>
+
+      <p class="hero-lead reveal" data-delay="2">
+        I design enterprise-grade conversational IVR on <strong>Amazon Connect</strong>,
+        <strong>Lex&nbsp;V2</strong>, <strong>Lambda</strong> and <strong>Bedrock Agents</strong> —
+        shipping self-service that banks and their customers actually trust.
+      </p>
+
+      <div class="hero-actions reveal" data-delay="3">
+        <a href="#projects" class="btn btn-primary">
+          View my work
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="mailto:isushilpuri@gmail.com" class="btn btn-ghost">Get in touch</a>
+      </div>
+
+      <div class="hero-socials reveal" data-delay="4">
+        {socials.map((s) => (
+          <a class="social-btn" href={s.href} target="_blank" rel="noreferrer" aria-label={s.label}>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d={s.path} /></svg>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="reveal" data-delay="2">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span>
+          <span class="tname">sushil@aws — ivr-shell</span>
+        </div>
+        <div class="terminal-body" id="terminal-body"></div>
+      </div>
+    </div>
   </div>
 </header>
 
 <script>
-  const btn = document.getElementById('vis-profile');
-  if (btn) {
-    btn.addEventListener('click', () => {
-      document.getElementById('service')?.scrollIntoView({ behavior: 'smooth' });
-    });
+  const lines = [
+    { p: '$', cmd: 'whoami', out: 'Contact Center Engineer @ Cognizant' },
+    { p: '$', cmd: 'cat stack.txt', out: 'Amazon Connect · Lex V2 · Lambda · Bedrock' },
+    { p: '$', cmd: 'metrics --show', out: '82% speech recognition · 60% containment' },
+    { p: '$', cmd: 'status', out: 'Available for work ●' },
+  ];
+
+  const body = document.getElementById('terminal-body');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function renderStatic() {
+    if (!body) return;
+    body.innerHTML = lines.map(l =>
+      `<div class="term-line"><span class="term-prompt">${l.p}</span> <span class="term-path">~</span> ${l.cmd}</div>` +
+      `<div class="term-line term-out">${l.out}</div>`
+    ).join('');
+  }
+
+  async function type() {
+    if (!body) return;
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    for (const l of lines) {
+      const cmdEl = document.createElement('div');
+      cmdEl.className = 'term-line';
+      cmdEl.innerHTML = `<span class="term-prompt">${l.p}</span> <span class="term-path">~</span> <span class="cmd"></span><span class="term-cursor"></span>`;
+      body.appendChild(cmdEl);
+      const target = cmdEl.querySelector('.cmd');
+      const cursor = cmdEl.querySelector('.term-cursor');
+      for (const ch of l.cmd) { target.textContent += ch; await sleep(38); }
+      cursor.remove();
+      const outEl = document.createElement('div');
+      outEl.className = 'term-line term-out';
+      outEl.textContent = l.out;
+      body.appendChild(outEl);
+      await sleep(560);
+    }
+    const final = document.createElement('div');
+    final.className = 'term-line';
+    final.innerHTML = `<span class="term-prompt">$</span> <span class="term-path">~</span> <span class="term-cursor"></span>`;
+    body.appendChild(final);
+  }
+
+  if (reduce) { renderStatic(); }
+  else {
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => { if (e.isIntersecting) { type(); obs.disconnect(); } });
+    }, { threshold: 0.4 });
+    if (body) io.observe(body);
   }
 </script>

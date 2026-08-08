@@ -1,25 +1,36 @@
 ---
-import { services } from "../data/services.js";
+import { services } from '../data/services.js';
 ---
 
-<section class="section" id="service">
-  <div class="container text-center">
-    <p class="section-subtitle">What I Do ?</p>
-    <h6 class="section-title mb-6">Service</h6>
-    <div class="row">
-      {
-        services.map((service) => (
-          <div class="col-md-6 col-lg-3">
-            <div class="service-card">
-              <div class="body">
-                <img src={service.image} alt={service.title} class="icon" />
-                <h6 class="title">{service.title}</h6>
-                <p class="subtitle">{service.description}</p>
-              </div>
-            </div>
+<section class="section" id="services">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">What I do</p>
+      <h2 class="section-title">Services &amp; expertise</h2>
+      <p class="section-desc">
+        End-to-end conversational IVR — from NLU and contact-flow design to the Lambda code that
+        powers it. Everything below runs in production banking environments today.
+      </p>
+    </div>
+
+    <div class="card-grid services-grid">
+      {services.map((service, i) => (
+        <article class="card service-card reveal" data-delay={String(i % 3)}>
+          <div class="service-top">
+            <span class="service-icon">
+              <img src={service.image} alt={service.title} />
+            </span>
+            <h3>{service.title}</h3>
+            <span class="service-index">{String(i + 1).padStart(2, '0')}</span>
           </div>
-        ))
-      }
+          <p>{service.description}</p>
+          {service.tags && (
+            <div class="service-tags">
+              {service.tags.map((tag) => <span class="chip">{tag}</span>)}
+            </div>
+          )}
+        </article>
+      ))}
     </div>
   </div>
 </section>

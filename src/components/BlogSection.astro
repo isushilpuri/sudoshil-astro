@@ -3,33 +3,36 @@ import { getCollection } from 'astro:content';
 
 const posts = await getCollection('blog');
 posts.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+
+const arrow = 'M5 12h14M13 6l6 6-6 6';
 ---
 
 <section class="section" id="blog">
-  <div class="container text-center">
-    <p class="section-subtitle">My Thoughts &amp; Learnings</p>
-    <h6 class="section-title mb-6">Blog</h6>
-    <div class="row">
-      {posts.map(post => (
-        <div class="col-md-4">
-          <div class="card mb-4 shadow-sm h-100">
-            <div class="card-body text-left d-flex flex-column">
-              <div class="mb-2">
-                {post.data.tags.map(tag => (
-                  <span class="blog-tag">{tag}</span>
-                ))}
-              </div>
-              <h5 class="card-title">{post.data.title}</h5>
-              <p class="card-text text-muted" style="font-size:0.85rem;">
-                {post.data.date}&nbsp;&middot;&nbsp;{post.data.readTime}
-              </p>
-              <p class="card-text flex-grow-1">{post.data.description}</p>
-              <a href={`/blog/${post.slug}`} class="btn btn-outline-primary btn-sm mt-2 align-self-start">
-                Read More
-              </a>
-            </div>
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Writing</p>
+      <h2 class="section-title">From the blog</h2>
+      <p class="section-desc">Notes on Amazon Connect, Lex, Python and whatever I'm learning.</p>
+    </div>
+
+    <div class="card-grid blog-grid">
+      {posts.map((post, i) => (
+        <a href={`/blog/${post.slug}`} class="card blog-card reveal" data-delay={String(i % 3)}>
+          <div class="meta">
+            <span>{post.data.date}</span>
+            <span class="sep">•</span>
+            <span>{post.data.readTime}</span>
           </div>
-        </div>
+          <div class="blog-tags">
+            {post.data.tags.slice(0, 3).map((tag) => <span class="chip">{tag}</span>)}
+          </div>
+          <h3>{post.data.title}</h3>
+          <p>{post.data.description}</p>
+          <span class="blog-read">
+            Read article
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d={arrow} /></svg>
+          </span>
+        </a>
       ))}
     </div>
   </div>

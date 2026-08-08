@@ -1,4 +1,5 @@
 ---
+import '../styles/global.css';
 import type { CollectionEntry } from 'astro:content';
 import Footer from '../components/Footer.astro';
 
@@ -15,15 +16,17 @@ interface Props {
   nextPost: CollectionEntry<'blog'> | null;
 }
 
-const { title, description, date, readTime, tags, headerGradient, accentColor, calloutBg, prevPost, nextPost } = Astro.props;
+const { title, description, date, readTime, tags, headerGradient, prevPost, nextPost } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" style={`--accent-color: ${accentColor}; --callout-bg: ${calloutBg};`}>
+<html lang="en">
   <head>
+    <script is:inline>document.documentElement.classList.add('js');</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0e17" />
     <link rel="canonical" href={Astro.url.href} />
 
     <!-- Open Graph -->
@@ -40,221 +43,217 @@ const { title, description, date, readTime, tags, headerGradient, accentColor, c
     <meta name="twitter:site" content="@sudoshil" />
 
     <title>{title} | Sudoshil</title>
-    <link rel="stylesheet" href="/assets/vendors/themify-icons/css/themify-icons.css" />
-    <link rel="stylesheet" href="/assets/css/meyawo.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
     <style is:global>
-      body { background: #f8f9fa; }
+      .post-header {
+        position: relative;
+        padding: 132px 0 56px;
+        overflow: hidden;
+        border-bottom: 1px solid var(--border);
+      }
+      .post-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        opacity: 0.85;
+        background: var(--post-grad, var(--grad));
+        -webkit-mask: linear-gradient(180deg, rgba(0,0,0,0.55), transparent);
+        mask: linear-gradient(180deg, rgba(0,0,0,0.55), transparent);
+      }
+      .back-link {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 0.9rem; color: var(--text-muted);
+        margin-bottom: 26px; transition: color 0.2s, gap 0.2s;
+      }
+      .back-link:hover { color: #fff; gap: 12px; }
+      .back-link svg { width: 16px; height: 16px; }
+      .post-header h1 {
+        font-size: clamp(1.9rem, 4.6vw, 3rem);
+        letter-spacing: -0.02em;
+        line-height: 1.18;
+        max-width: 20ch;
+        margin: 14px 0 20px;
+      }
+      .post-meta { display: flex; flex-wrap: wrap; gap: 18px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted); }
+      .post-meta span { display: inline-flex; align-items: center; gap: 7px; }
+      .post-meta svg { width: 15px; height: 15px; opacity: 0.8; }
 
-      .blog-post-header {
-        color: #fff;
-        padding: 80px 0 50px;
-        margin-bottom: 0;
-      }
-      .blog-post-header .back-link {
-        color: rgba(255,255,255,0.8);
-        text-decoration: none;
-        font-size: 0.9rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        margin-bottom: 24px;
-        transition: color 0.2s;
-      }
-      .blog-post-header .back-link:hover { color: #fff; }
-      .blog-post-header h1 { font-size: 2.2rem; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
-      .blog-meta { font-size: 0.88rem; color: rgba(255,255,255,0.75); }
-      .blog-meta span { margin-right: 20px; }
-
-      .tag-badge {
-        display: inline-block;
-        background: rgba(255,255,255,0.2);
-        color: #fff;
-        border-radius: 999px;
-        padding: 4px 14px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin-right: 6px;
-      }
+      .post-wrap { max-width: 800px; margin: 0 auto; padding: 0 24px; }
 
       .blog-body {
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 20px rgba(0,0,0,0.07);
-        padding: 48px 56px;
-        margin-top: -30px;
-        margin-bottom: 60px;
-        max-width: 820px;
+        padding: 52px 0 40px;
+        font-size: 1.04rem;
+        color: var(--text-muted);
       }
-      .blog-body h2 { font-size: 1.4rem; font-weight: 700; color: var(--accent-color, #695aa6); margin: 36px 0 12px; }
-      .blog-body h3 { font-size: 1.1rem; font-weight: 700; color: #393e46; margin: 28px 0 10px; }
-      .blog-body p { color: #444; line-height: 1.85; margin-bottom: 16px; }
-      .blog-body ul, .blog-body ol { color: #444; line-height: 1.85; padding-left: 24px; margin-bottom: 16px; }
-      .blog-body li { margin-bottom: 6px; }
+      .blog-body > *:first-child { margin-top: 0; }
+      .blog-body h2 {
+        font-size: 1.55rem; color: var(--text); letter-spacing: -0.01em;
+        margin: 44px 0 14px; padding-top: 10px;
+      }
+      .blog-body h3 { font-size: 1.22rem; color: var(--text); margin: 32px 0 10px; }
+      .blog-body p { line-height: 1.85; margin: 0 0 18px; }
+      .blog-body a { color: var(--c-cyan); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(34,211,238,0.4); }
+      .blog-body a:hover { text-decoration-color: var(--c-cyan); }
+      .blog-body strong { color: var(--text); font-weight: 600; }
+      .blog-body ul, .blog-body ol { line-height: 1.85; padding-left: 24px; margin: 0 0 18px; }
+      .blog-body li { margin-bottom: 8px; }
+      .blog-body li::marker { color: var(--c-indigo); }
+      .blog-body img { border-radius: var(--r); border: 1px solid var(--border); margin: 24px 0; }
+      .blog-body hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+      .blog-body blockquote {
+        margin: 24px 0; padding: 4px 20px;
+        border-left: 3px solid var(--c-indigo);
+        color: var(--text); font-style: italic;
+      }
+
       .blog-body code:not(pre code) {
-        background: var(--callout-bg, #f3f0ff);
-        color: var(--accent-color, #695aa6);
-        padding: 2px 7px;
-        border-radius: 4px;
-        font-size: 0.9em;
+        background: rgba(34, 211, 238, 0.1);
+        color: var(--c-cyan);
+        padding: 2px 7px; border-radius: 5px;
+        font-family: var(--font-mono); font-size: 0.86em;
+        border: 1px solid rgba(34, 211, 238, 0.18);
       }
       .blog-body pre {
-        background: #1e1e2e;
+        background: #070a12;
+        border: 1px solid var(--border);
         color: #cdd6f4;
-        border-radius: 8px;
-        padding: 20px 24px;
+        border-radius: var(--r-sm);
+        padding: 20px 22px;
         overflow-x: auto;
-        margin: 20px 0;
-        font-size: 0.88rem;
-        line-height: 1.7;
+        margin: 22px 0;
+        font-size: 0.88rem; line-height: 1.7;
+        font-family: var(--font-mono);
       }
-      .blog-body pre code { background: none !important; color: inherit !important; padding: 0 !important; }
+      .blog-body pre code { background: none !important; color: inherit !important; padding: 0 !important; border: none !important; }
 
-      .blog-body table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9rem; }
-      .blog-body th { background: var(--callout-bg, #f3f0ff); color: var(--accent-color, #695aa6); padding: 10px 14px; text-align: left; }
-      .blog-body td { padding: 10px 14px; border-bottom: 1px solid #eee; color: #444; }
+      .blog-body table {
+        width: 100%; border-collapse: collapse; margin: 22px 0;
+        font-size: 0.92rem; overflow: hidden; border-radius: var(--r-sm);
+        border: 1px solid var(--border);
+      }
+      .blog-body th { background: var(--surface-2); color: var(--text); padding: 12px 15px; text-align: left; }
+      .blog-body td { padding: 12px 15px; border-top: 1px solid var(--border); }
 
       .callout {
-        border-left: 4px solid var(--accent-color, #695aa6);
-        background: var(--callout-bg, #f3f0ff);
-        border-radius: 0 8px 8px 0;
-        padding: 14px 20px;
-        margin: 20px 0;
-        color: #444;
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--c-cyan);
+        background: var(--surface);
+        border-radius: 0 var(--r-sm) var(--r-sm) 0;
+        padding: 16px 20px; margin: 22px 0; color: var(--text-muted);
       }
-      .callout.tip {
-        border-left-color: #ff6d02;
-        background: #fff5ec;
-      }
+      .callout.tip { border-left-color: #febc2e; }
 
-      .custom-navbar { position: relative !important; }
-      .custom-navbar .logo { color: #695aa6; }
+      /* Post nav */
+      .post-nav { max-width: 800px; margin: 0 auto 72px; padding: 0 24px; }
+      .post-nav-inner {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; border-top: 1px solid var(--border); padding-top: 28px;
+      }
+      .nav-post {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 18px; border-radius: var(--r-sm);
+        border: 1px solid var(--border); background: var(--surface);
+        max-width: 44%; min-width: 0;
+        transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      }
+      .nav-post:hover { border-color: var(--border-strong); background: var(--surface-2); transform: translateY(-2px); }
+      .nav-post .arrow { color: var(--c-cyan); font-size: 1.2rem; flex-shrink: 0; }
+      .nav-post .label { display: flex; flex-direction: column; min-width: 0; }
+      .nav-post .hint { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); }
+      .nav-post .name { font-size: 0.9rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .nav-post.next .label { text-align: right; }
+      .nav-disabled { visibility: hidden; }
+      .nav-all {
+        font-family: var(--font-mono); font-size: 0.82rem;
+        padding: 9px 18px; border-radius: 999px;
+        border: 1px solid var(--border-strong); color: var(--text-muted);
+        white-space: nowrap; flex-shrink: 0; transition: color 0.2s, border-color 0.2s;
+      }
+      .nav-all:hover { color: var(--text); border-color: var(--accent); }
 
-      #blog-post-nav { margin-bottom: 48px; max-width: 820px; }
-      .blog-post-nav-inner {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        border-top: 1px solid #eee;
-        padding-top: 28px;
-      }
-      .blog-nav-btn {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        text-decoration: none;
-        color: #393e46;
-        padding: 12px 16px;
-        border-radius: 8px;
-        border: 1px solid #eee;
-        background: #fff;
-        transition: border-color 0.2s, box-shadow 0.2s;
-        min-width: 0;
-        max-width: 42%;
-      }
-      .blog-nav-btn:hover { border-color: #695aa6; box-shadow: 0 2px 10px rgba(105,90,166,0.12); color: #695aa6; text-decoration: none; }
-      .blog-nav-disabled { visibility: hidden; }
-      .blog-nav-arrow { font-size: 1.3rem; color: #695aa6; flex-shrink: 0; }
-      .blog-nav-label { display: flex; flex-direction: column; min-width: 0; }
-      .blog-nav-hint { font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.05em; }
-      .blog-nav-title { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .blog-nav-next .blog-nav-label { text-align: right; }
-      .blog-nav-all {
-        font-size: 0.85rem;
-        color: #695aa6;
-        text-decoration: none;
-        padding: 8px 16px;
-        border-radius: 999px;
-        border: 1px solid #695aa6;
-        white-space: nowrap;
-        flex-shrink: 0;
-        transition: background 0.2s, color 0.2s;
-      }
-      .blog-nav-all:hover { background: #695aa6; color: #fff; text-decoration: none; }
-
-      @media (max-width: 768px) {
-        .blog-body { padding: 28px 20px; }
-        .blog-post-header h1 { font-size: 1.6rem; }
+      @media (max-width: 640px) {
+        .blog-body { padding: 40px 0 32px; }
+        .nav-post .name { display: none; }
       }
     </style>
   </head>
   <body>
-    <nav class="custom-navbar">
-      <div class="container">
-        <a class="logo" href="/">Sudoshil</a>
-        <ul class="nav">
-          <li class="item"><a class="link" href="/#home">Home</a></li>
-          <li class="item"><a class="link" href="/#about">About</a></li>
-          <li class="item"><a class="link" href="/#portfolio">Projects</a></li>
-          <li class="item"><a class="link active" href="/#blog">Blog</a></li>
-          <li class="item"><a class="link" href="/#contact">Contact</a></li>
+    <nav class="nav affix">
+      <div class="container nav-inner">
+        <a class="logo" href="/">Sudoshil<span class="dot">.</span></a>
+        <ul class="nav-links" id="nav-links">
+          <li><a class="link" href="/#about">About</a></li>
+          <li><a class="link" href="/#services">Services</a></li>
+          <li><a class="link" href="/#projects">Projects</a></li>
+          <li><a class="link" href="/#blog">Blog</a></li>
+          <li class="nav-cta"><a href="/#contact" class="btn btn-primary">Contact</a></li>
         </ul>
-        <a href="javascript:void(0)" id="nav-toggle" class="hamburger hamburger--elastic">
-          <div class="hamburger-box"><div class="hamburger-inner"></div></div>
-        </a>
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu"><span></span></button>
       </div>
     </nav>
 
-    <div class="blog-post-header" style={`background: ${headerGradient};`}>
-      <div class="container">
-        <a class="back-link" href="/#blog"><i class="ti-arrow-left"></i> Back to Blog</a>
-        <div class="mb-2">
-          {tags.map(tag => <span class="tag-badge">{tag}</span>)}
+    <header class="post-header" style={`--post-grad: ${headerGradient};`}>
+      <div class="post-wrap">
+        <a class="back-link" href="/#blog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+          Back to blog
+        </a>
+        <div class="blog-tags">
+          {tags.map((tag) => <span class="chip accent">{tag}</span>)}
         </div>
         <h1>{title}</h1>
-        <div class="blog-meta">
-          <span><i class="ti-calendar"></i>&nbsp; {date}</span>
-          <span><i class="ti-time"></i>&nbsp; {readTime}</span>
-          <span><i class="ti-user"></i>&nbsp; Sushil Kumar</span>
+        <div class="post-meta">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>{date}</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{readTime}</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Sushil Kumar</span>
         </div>
       </div>
-    </div>
+    </header>
 
-    <div class="container">
+    <article class="post-wrap">
       <div class="blog-body">
         <slot />
       </div>
-    </div>
+    </article>
 
-    <div class="container">
-      <div id="blog-post-nav">
-        <div class="blog-post-nav-inner">
-          {prevPost
-            ? (
-              <a href={`/blog/${prevPost.slug}`} class="blog-nav-btn blog-nav-prev">
-                <span class="blog-nav-arrow">&#8592;</span>
-                <span class="blog-nav-label">
-                  <span class="blog-nav-hint">Previous</span>
-                  <span class="blog-nav-title">{prevPost.data.title}</span>
-                </span>
-              </a>
-            )
-            : <span class="blog-nav-btn blog-nav-prev blog-nav-disabled"></span>
-          }
-          <a href="/#blog" class="blog-nav-all">All Posts</a>
-          {nextPost
-            ? (
-              <a href={`/blog/${nextPost.slug}`} class="blog-nav-btn blog-nav-next">
-                <span class="blog-nav-label">
-                  <span class="blog-nav-hint">Next</span>
-                  <span class="blog-nav-title">{nextPost.data.title}</span>
-                </span>
-                <span class="blog-nav-arrow">&#8594;</span>
-              </a>
-            )
-            : <span class="blog-nav-btn blog-nav-next blog-nav-disabled"></span>
-          }
-        </div>
+    <nav class="post-nav">
+      <div class="post-nav-inner">
+        {prevPost
+          ? (
+            <a href={`/blog/${prevPost.slug}`} class="nav-post prev">
+              <span class="arrow">←</span>
+              <span class="label"><span class="hint">Previous</span><span class="name">{prevPost.data.title}</span></span>
+            </a>
+          )
+          : <span class="nav-post prev nav-disabled"></span>
+        }
+        <a href="/#blog" class="nav-all">All posts</a>
+        {nextPost
+          ? (
+            <a href={`/blog/${nextPost.slug}`} class="nav-post next">
+              <span class="label"><span class="hint">Next</span><span class="name">{nextPost.data.title}</span></span>
+              <span class="arrow">→</span>
+            </a>
+          )
+          : <span class="nav-post next nav-disabled"></span>
+        }
       </div>
-    </div>
+    </nav>
 
     <Footer />
 
     <script is:inline>
-      document.getElementById('nav-toggle').addEventListener('click', function() {
-        this.classList.toggle('is-active');
-        document.querySelector('ul.nav').classList.toggle('show');
-      });
+      var t = document.getElementById('nav-toggle');
+      var l = document.getElementById('nav-links');
+      if (t && l) t.addEventListener('click', function () { t.classList.toggle('open'); l.classList.toggle('open'); });
     </script>
   </body>
 </html>

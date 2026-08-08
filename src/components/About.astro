@@ -1,29 +1,88 @@
 ---
+const skills = [
+  'Amazon Connect', 'Lex V2', 'AWS Lambda', 'Bedrock Agents',
+  'Python', 'Rust', 'DynamoDB', 'NLU Design',
+];
+
+const stats = [
+  { value: 5, suffix: '+', label: 'Years experience' },
+  { value: 30, suffix: '+', label: 'Lex V2 bots shipped' },
+  { value: 82, suffix: '%', label: 'Speech recognition' },
+  { value: 60, suffix: '%', label: 'IVR containment' },
+];
 ---
 
-<section class="section pt-0" id="about">
-  <div class="container text-center">
-    <div class="about">
-      <div class="about-img-holder">
-        <img src="/assets/imgs/profile.png" class="about-img" alt="Sushil Kumar profile photo" />
+<section class="section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-photo reveal">
+        <img src="/assets/imgs/profile.png" alt="Sushil Kumar" />
       </div>
-      <div class="about-caption">
-        <p class="section-subtitle">Who Am I ?</p>
-        <h2 class="section-title mb-3">About Me</h2>
-        <p>
-          I'm <strong>Sushil Kumar</strong>, a Contact Center Engineer with <strong>5+ years of experience</strong> at Cognizant, where I work as a Senior Associate designing and delivering enterprise-grade IVR systems for large-scale banking and financial services.
+
+      <div class="about-body reveal" data-delay="1">
+        <p class="eyebrow">Who am I</p>
+        <h2 class="section-title">Engineering conversations that scale</h2>
+        <p style="margin-top:18px;">
+          I'm <strong>Sushil Kumar</strong>, a Contact Center Engineer and Senior Associate at
+          <strong>Cognizant</strong> with 5+ years designing and delivering enterprise-grade IVR
+          systems for large-scale banking and financial services.
         </p>
         <p>
-          I specialise in <strong>Amazon Connect, Amazon Lex V2, AWS Lambda,</strong> and <strong>Amazon Bedrock Agent</strong> — building end-to-end conversational IVR solutions that have achieved an 82% speech recognition rate and 60% containment on critical payment features. I've led teams of 5 engineers and mentored 50+ associates through the Connect Academy initiative.
+          I specialise in <strong>Amazon Connect, Lex&nbsp;V2, AWS Lambda</strong> and
+          <strong>Amazon Bedrock Agents</strong> — building end-to-end conversational IVR that hit an
+          82% speech-recognition rate and 60% containment on critical payment features. I've led a
+          team of 5 engineers and mentored 50+ associates through the Connect Academy initiative.
         </p>
         <p>
-          NIT Raipur graduate (B.Tech, Mechanical Engineering). Python is my primary language; Rust my secondary. Outside engineering, I enjoy playing chess.
+          NIT Raipur graduate (B.Tech, Mechanical). Python is my primary language, Rust my secondary.
+          Off the clock, you'll find me playing chess.
         </p>
-        <div class="mt-4" style="display:flex;gap:12px;flex-wrap:wrap;">
-          <a href="/SushilKumar_Resume.html" id="view-resume-btn" class="btn-rounded btn btn-outline-primary">View Resume</a>
-          <a href="mailto:isushilpuri@gmail.com" class="btn-rounded btn btn-primary">Hire Me</a>
+
+        <div class="about-skills">
+          {skills.map((s) => <span class="chip accent">{s}</span>)}
+        </div>
+
+        <div class="about-actions">
+          <a href="/SushilKumar_Resume.html" id="view-resume-btn" class="btn btn-ghost">View résumé</a>
+          <a href="mailto:isushilpuri@gmail.com" class="btn btn-primary">Hire me</a>
         </div>
       </div>
     </div>
+
+    <div class="stats" id="stats">
+      {stats.map((s, i) => (
+        <div class="stat reveal" data-delay={String(i)}>
+          <div class="num gradient-text" data-count={String(s.value)} data-suffix={s.suffix}>0{s.suffix}</div>
+          <div class="label">{s.label}</div>
+        </div>
+      ))}
+    </div>
   </div>
 </section>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const nums = document.querySelectorAll<HTMLElement>('#stats .num');
+
+  function run(el: HTMLElement) {
+    const target = Number(el.dataset.count || '0');
+    const suffix = el.dataset.suffix || '';
+    if (reduce) { el.textContent = target + suffix; return; }
+    const dur = 1400;
+    const start = performance.now();
+    function frame(now: number) {
+      const t = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(eased * target) + suffix;
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) { run(e.target as HTMLElement); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.6 });
+  nums.forEach((n) => io.observe(n));
+</script>
